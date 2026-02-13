@@ -7,12 +7,15 @@
 
 import SwiftUI
 
+
+
 struct AppView: View {
-    @AppStorage("ShowTabbarView")  var showTabBar: Bool = false
+    @State var appState: AppState = AppState()
+    
     var body: some View {
         ZStack {
             AppViewBuilder(
-                showTabBar: showTabBar,
+                showTabBar: appState.showTabBar,
                 tabbarView: {
                     TabBarView()
                 },
@@ -20,14 +23,14 @@ struct AppView: View {
                     WelcomeView()
                 }
             )
+            .environment(appState)
         }
-        .animation(.smooth, value: showTabBar)
     }
 }
 
 #Preview("AppView - Tabbar") {
-    AppView(showTabBar: true)
+    AppView(appState: AppState(showTabBar: true))
 }
 #Preview("AppView - Onboarding") {
-    AppView(showTabBar: false)
+    AppView(appState: AppState(showTabBar: false))
 }
