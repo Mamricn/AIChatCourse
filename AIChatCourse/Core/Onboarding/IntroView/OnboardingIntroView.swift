@@ -31,8 +31,6 @@ struct OnboardingIntroView: View {
             .frame(maxHeight: .infinity)
             .padding(24)
             
-            .font(.title3)
-            
             NavigationLink {
                 OnboardingColorView()
             } label: {
@@ -41,6 +39,8 @@ struct OnboardingIntroView: View {
             }
         }
         .padding(24)
+        .font(.title3)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 
@@ -48,4 +48,6 @@ struct OnboardingIntroView: View {
     NavigationStack{
         OnboardingIntroView()
     }
+    .environment(AppState())
+    
 }

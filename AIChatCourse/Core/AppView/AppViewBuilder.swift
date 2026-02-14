@@ -47,7 +47,6 @@ private struct PreviewView: View {
                 }
             )
         }
-        .animation(.smooth, value: showTabBar)
         .onTapGesture {
             showTabBar.toggle()
         }
