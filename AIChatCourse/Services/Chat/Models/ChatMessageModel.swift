@@ -12,7 +12,7 @@ struct ChatMessageModel {
     let chatId: String
     let authorId: String?
     let content: String?
-    let seenByids: [String]?
+    let seenByIds: [String]?
     let dateCrated: Date?
     
     init(
@@ -20,17 +20,22 @@ struct ChatMessageModel {
         chatId: String,
         authorId: String? = nil,
         content: String? = nil,
-        seenByids: [String]? = nil,
+        seenByIds: [String]? = nil,
         dateCrated: Date? = nil
     ) {
         self.id = id
         self.chatId = chatId
         self.authorId = authorId
         self.content = content
-        self.seenByids = seenByids
+        self.seenByIds = seenByIds
         self.dateCrated = dateCrated
     }
     
+    func hasBeenSeenBy(userId: String) -> Bool{
+        guard let seenByIds else { return false }
+        return seenByIds.contains(userId)
+        
+    }
     
     static var mock: ChatMessageModel {
         mocks[0]
@@ -46,7 +51,7 @@ struct ChatMessageModel {
                    chatId: "chat_001",
                    authorId: "user_001",
                    content: "Hey 👋",
-                   seenByids: ["user_001"],
+                   seenByIds: ["user_001"],
                    dateCrated: now.addingTimeInterval(days: -2, hours: -3)
                ),
                ChatMessageModel(
@@ -54,7 +59,7 @@ struct ChatMessageModel {
                    chatId: "chat_001",
                    authorId: "user_002",
                    content: "Hi! How are you?",
-                   seenByids: ["user_001", "user_002"],
+                   seenByIds: ["user_001", "user_002"],
                    dateCrated: now.addingTimeInterval(days: -2, hours: -2, minutes: -40)
                ),
                ChatMessageModel(
@@ -62,7 +67,7 @@ struct ChatMessageModel {
                    chatId: "chat_001",
                    authorId: "user_001",
                    content: "All good — you?",
-                   seenByids: ["user_001"],
+                   seenByIds: ["user_001"],
                    dateCrated: now.addingTimeInterval(days: -2, hours: -2, minutes: -15)
                ),
                ChatMessageModel(
@@ -70,7 +75,7 @@ struct ChatMessageModel {
                    chatId: "chat_002",
                    authorId: "user_003",
                    content: "Welcome to the new chat!",
-                   seenByids: ["user_003"],
+                   seenByIds: ["user_003"],
                    dateCrated: now.addingTimeInterval(days: -1, hours: -6)
                ),
                ChatMessageModel(
@@ -78,7 +83,7 @@ struct ChatMessageModel {
                    chatId: "chat_002",
                    authorId: "user_001",
                    content: "Nice 🙌",
-                   seenByids: ["user_001", "user_003"],
+                   seenByIds: ["user_001", "user_003"],
                    dateCrated: now.addingTimeInterval(hours: -3, minutes: -20)
                ),
                ChatMessageModel(
@@ -86,7 +91,7 @@ struct ChatMessageModel {
                    chatId: "chat_003",
                    authorId: "user_002",
                    content: "Are we still on for today?",
-                   seenByids: nil,
+                   seenByIds: nil,
                    dateCrated: now.addingTimeInterval(minutes: -25)
                )
            ]
