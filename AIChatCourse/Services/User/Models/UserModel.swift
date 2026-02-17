@@ -15,6 +15,9 @@ struct UserModel {
     let didCompleteOnboarding: Bool?
     let profileColorHex: String?
     
+    
+    
+    // set starting value to values above 
     init(
         userId: String,
         dateCreated: Date? = nil,
