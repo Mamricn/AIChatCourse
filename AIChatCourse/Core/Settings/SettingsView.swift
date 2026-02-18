@@ -17,7 +17,7 @@ struct SettingsView: View {
     
     
     @State private var isPremium: Bool = true
-    @State private var isAnynomusUser: Bool = true
+    @State private var isAnynomusUser: Bool = false
     @State private var showCreatAccountView: Bool = false
 
     
