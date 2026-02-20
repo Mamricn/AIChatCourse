@@ -27,6 +27,9 @@ struct ChatView: View {
     @State private var showChatSettings: AnyAppAlert?
 
 
+    var avatarId: String = AvatarModel.mock.avatarId
+    
+    
     var body: some View {
         
         

@@ -15,12 +15,14 @@ struct ProfileView: View {
     @State private var myAvatars: [AvatarModel] = []
     @State private var isLoading: Bool = true
     
+    @State private var path: [NavigationPathOption] = []
+    
 
     
     
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List{
                 myInfoSection
                 myAvatarsSection
@@ -28,6 +30,7 @@ struct ProfileView: View {
                 
             }
             .navigationTitle("Profile")
+            .navigationDestinationForCoreModule(path: $path)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     settingsButton
@@ -43,7 +46,13 @@ struct ProfileView: View {
         .task{
             await loadData()
         }
+        
     }
+    
+    
+    
+    
+    
     
     private func loadData() async {
         try? await Task.sleep(for: .seconds(5))
@@ -97,6 +106,8 @@ struct ProfileView: View {
                         imageName: avatar.profileImageName
                     )
                     .anyButton(.highlight, action: {
+                        onAvatarPressed(avatar: avatar)
+                        
                         
                     })
                     .removeListRowFormating()
@@ -143,7 +154,9 @@ struct ProfileView: View {
         myAvatars.remove(at: index)
     }
     
-    
+    private func onAvatarPressed(avatar: AvatarModel){
+        path.append(.chat(avatarId: avatar.avatarId))
+    }
 }
 
 

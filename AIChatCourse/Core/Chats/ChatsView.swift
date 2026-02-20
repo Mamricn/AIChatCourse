@@ -7,12 +7,17 @@
 
 import SwiftUI
 
+
+
+
 struct ChatsView: View {
     
     @State private var chats: [ChatModel] = ChatModel.mocks
     
+    @State private var path: [NavigationPathOption] = []
+    
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             
             List{
                 ForEach(chats){ chat in
@@ -29,16 +34,20 @@ struct ChatsView: View {
                         }
                     )
                     .anyButton(.highlight, action: {
-                        
+                        onChatPressed(chat: chat)
                     })
                     .removeListRowFormating()
                 }
             }
-            
-            
-            
-                .navigationTitle("Chats")
+            .navigationTitle("Chats")
+            .navigationDestinationForCoreModule(path: $path)
         }
+    }
+    
+    
+    
+    private func onChatPressed(chat: ChatModel) {
+        path.append(.chat(avatarId: chat.avatarId))
     }
 }
 
