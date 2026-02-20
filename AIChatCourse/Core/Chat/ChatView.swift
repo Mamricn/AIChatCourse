@@ -19,7 +19,7 @@ struct ChatView: View {
     @State private var currentUser: UserModel? = .mock
     @State private var textFieldText: String = ""
     @State private var scrollPosition: String?
-    
+    @State private var showProfileModel: Bool = false
     
     
 //    @State private var showAlert: Bool = false
@@ -28,14 +28,17 @@ struct ChatView: View {
 
 
     var body: some View {
+        
+        
+        
         VStack(spacing: 0){
             scrollViewSection
             textFieldSection
             
-
+            
             
         }
-        .navigationTitle(avatar?.name ?? "Chat")
+      .navigationTitle(avatar?.name ?? "Chat")
         .toolbarTitleDisplayMode(.inline)
         .toolbar{
             ToolbarItem(placement: .topBarTrailing) {
@@ -48,9 +51,11 @@ struct ChatView: View {
         }
         .showCustomAlert(type: .confirmationDialog, alert: $showChatSettings)
         .showCustomAlert(alert: $showAlert)
-        
-
-
+        .showModel(showModal: $showProfileModel) {
+            if let avatar {
+                profileModal(avatar: avatar)
+            }
+        }
     }
     
     
@@ -65,7 +70,8 @@ struct ChatView: View {
                         
                         message: message,
                         isCurrentUser: isCurrentUser,
-                        imageName: isCurrentUser ? nil : avatar?.profileImageName
+                        imageName: isCurrentUser ? nil : avatar?.profileImageName,
+                        onImagePressed: onAvatarImagePressed
                     )
                     .id(message.id)
                 }
@@ -115,7 +121,19 @@ struct ChatView: View {
     }
     
     
-    
+    private func profileModal(avatar: AvatarModel) -> some View {
+        ProfileModalView(
+            imageName: avatar.profileImageName,
+            title: avatar.name,
+            subtitle: avatar.characterOption?.rawValue.capitalized,
+            headline: avatar.characterDescription,
+            onXMarkPressed: {
+                showProfileModel = false
+            }
+        )
+            .padding(40)
+            .transition(.slide)
+    }
     
     
     
@@ -148,8 +166,6 @@ struct ChatView: View {
     }
     
     
-    
-    
     private func onChatSettingsPressed () {
         showChatSettings = AnyAppAlert(
             title: "",
@@ -171,7 +187,9 @@ struct ChatView: View {
         
     }
     
-    
+    private func onAvatarImagePressed () {
+        showProfileModel = true
+    }
 }
 
 #Preview {

@@ -16,6 +16,7 @@ struct ChatBubbleView: View {
     var showImage: Bool = true
     var imageName: String?
     let offSet: CGFloat = 14
+    var onImagePressed: (() -> Void)?
     
     
     var body: some View {
@@ -27,6 +28,9 @@ struct ChatBubbleView: View {
                     
                     if let imageName {
                         ImageLoaderView(urlString: imageName)
+                            .anyButton(.plain) {
+                                onImagePressed?()
+                            }
                     } else {
                         Rectangle()
                             .fill(.secondary)
@@ -35,13 +39,7 @@ struct ChatBubbleView: View {
                 .frame(width: 45, height: 45)
                 .clipShape(Circle())
                 .offset(y: offSet)
-            } else {
-                
             }
-            
-            
-            
-            
             
             Text(text)
                 .font(.body)
