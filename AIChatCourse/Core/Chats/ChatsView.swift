@@ -7,53 +7,48 @@
 
 import SwiftUI
 
-
-
-
 struct ChatsView: View {
     
     @State private var chats: [ChatModel] = ChatModel.mocks
     @State private var recentAvatars: [AvatarModel] = AvatarModel.mocks
-    
+
     @State private var path: [NavigationPathOption] = []
-    
+
     var body: some View {
         NavigationStack(path: $path) {
-            
-            List{
+            List {
                 if !recentAvatars.isEmpty {
                     recentsSection
                 }
-                
-                ChatSection
-                
+                chatsSection
             }
             .navigationTitle("Chats")
             .navigationDestinationForCoreModule(path: $path)
         }
     }
     
-    private var ChatSection: some View {
+    private var chatsSection: some View {
         Section {
             if chats.isEmpty {
-                Text("Your chats will appear here")
+                Text("Your chats will appear here!")
                     .foregroundStyle(.secondary)
                     .font(.title3)
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
+                    .padding(40)
                     .removeListRowFormating()
             } else {
-                ForEach(chats){ chat in
+                ForEach(chats) { chat in
                     ChatRowCellViewBuilder(
-                        currentUserId: nil, //FIXME: add cuid
+                        currentUserId: nil, // Add cuid
                         chat: chat,
                         getAvatar: {
                             try? await Task.sleep(for: .seconds(1))
-                            return .mock
+                            return AvatarModel.mocks.randomElement()!
                         },
                         getLastChatMessage: {
                             try? await Task.sleep(for: .seconds(1))
-                            return .mock
+                            return ChatMessageModel.mocks.randomElement()!
                         }
                     )
                     .anyButton(.highlight, action: {
@@ -65,25 +60,24 @@ struct ChatsView: View {
         } header: {
             Text("Chats")
         }
-
     }
     
     private var recentsSection: some View {
         Section {
-            ScrollView(.horizontal, showsIndicators: false){
-                LazyHStack(spacing: 8){
-                    ForEach(recentAvatars, id: \.self){ avatar in
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: 8) {
+                    ForEach(recentAvatars, id: \.self) { avatar in
                         if let imageName = avatar.profileImageName {
-                            VStack(spacing: 8){
+                            VStack(spacing: 8) {
                                 ImageLoaderView(urlString: imageName)
                                     .aspectRatio(1, contentMode: .fit)
                                     .clipShape(Circle())
                                 
                                 Text(avatar.name ?? "")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
                             }
-                            .anyButton(.plain) {
+                            .anyButton(.plain){
                                 onAvatarPressed(avatar: avatar)
                             }
                         }
@@ -92,6 +86,7 @@ struct ChatsView: View {
                 .padding(.top, 12)
             }
             .frame(height: 120)
+            .scrollIndicators(.hidden)
             .removeListRowFormating()
         } header: {
             Text("Recents")
