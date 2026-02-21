@@ -55,3 +55,7 @@ struct CategoryListView: View {
 #Preview {
     CategoryListView(path: .constant([]))
 }
+
+//
+//
+//aha czyli kilkam wybiera z niego avatarId przypisuje do path array potem otwiera to bo się znajduje w enum i tam jest zapisane żeby otworzyć ChatView(avatarId: "teacher01") I juz w data base sa profile I szuka tego z avatarId == teacher01 I go otwiera dobrze rozumiem?
