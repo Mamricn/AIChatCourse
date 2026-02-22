@@ -30,8 +30,19 @@ struct AppView: View {
             .task{
                await checkUserStatus()
             }
+            .onChange(of: appState.showTabBar) { _, showToBar in
+                if !showToBar{
+                    Task{
+                        await checkUserStatus()
+                    }
+                }
+            }
         }
     }
+    
+    
+    
+    
     func checkUserStatus() async {
         if let user = authService.getAuthenticatedUser(){
             //user is authenticated
