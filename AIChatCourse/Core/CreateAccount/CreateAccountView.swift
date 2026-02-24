@@ -11,12 +11,11 @@ struct CreateAccountView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.authService) private var authService
-    var onDidSignIn: ((_  isNewUser: Bool) -> Void)?
     
     
     var title: String = "Create Account?"
     var subtitle: String = "Don't lose your data! Connect to an SSO provider to save your account."
-    
+    var onDidSignIn: ((_  isNewUser: Bool) -> Void)?
     
     var body: some View {
         VStack(spacing: 24){

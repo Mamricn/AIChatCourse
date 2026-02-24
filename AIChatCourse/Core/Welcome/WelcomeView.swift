@@ -34,7 +34,7 @@ struct WelcomeView: View {
             CreateAccountView(
                 title: "Sign In",
                 subtitle: "Connect to an existing account.",
-                onDidSignIn : { isNewUser in
+                onDidSignIn: { isNewUser in
                     handleDidSignIn(isNewUser: isNewUser)
                 }
             )
@@ -112,4 +112,5 @@ struct WelcomeView: View {
 
 #Preview {
     WelcomeView()
+        .environment(AppState())
 }
