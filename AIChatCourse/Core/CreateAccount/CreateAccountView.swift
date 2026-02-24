@@ -11,6 +11,8 @@ struct CreateAccountView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(AuthManager.self) private var authManager
+    @Environment(UserManager.self) private var userManager
+
 
     
     
@@ -50,7 +52,11 @@ struct CreateAccountView: View {
             do{
                 
                 let result = try await authManager.signInApple()
-                print("Did sign in with apple!")
+                print("Did sign in with apple! \(result.user.uid)")
+                try await userManager.logIn(auth: result.user, isNewUser: result.isNewUser)
+                print("did log in ")
+
+                
                 onDidSignIn?(result.isNewUser)
                 dismiss()
                 
