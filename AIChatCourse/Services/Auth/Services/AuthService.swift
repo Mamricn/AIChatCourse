@@ -7,11 +7,9 @@
 
 import SwiftUI
 
-extension EnvironmentValues {
-    @Entry var authService: AuthService = MockAuthService()
-}
 
 protocol AuthService: Sendable {
+    func addAutheticatedUserListener(onListenerAttached: (any NSObjectProtocol) -> Void) -> AsyncStream<UserAuthInfo?>
     func getAuthenticatedUser() -> UserAuthInfo?
     func signInAnonymusly() async throws -> (user: UserAuthInfo, isNewUser: Bool)
     func signInApple() async throws -> (user: UserAuthInfo, isNewUser: Bool)
