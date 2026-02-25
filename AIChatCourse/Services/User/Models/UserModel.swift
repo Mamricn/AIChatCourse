@@ -68,11 +68,9 @@ struct UserModel: Codable {
     
     var profileColorCalculated: Color {
         guard let profileColorHex else {
-            return .accent
+            return .pink
         }
         return Color(hex: profileColorHex )
-        
-        
     }
     
     

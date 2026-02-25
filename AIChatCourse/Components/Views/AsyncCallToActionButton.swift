@@ -30,6 +30,9 @@ struct AsyncCallToActionButton: View {
     }
 }
 
+
+
+
  private struct PreviewView: View {
     @State private var isLoading: Bool = false
     
@@ -41,7 +44,7 @@ struct AsyncCallToActionButton: View {
                 isLoading = true
                 
                 Task{
-                    try? await Task.sleep(for: .seconds(3))
+                    try? await Task.sleep(for: .milliseconds(50))
                     
                     isLoading = false
                 }

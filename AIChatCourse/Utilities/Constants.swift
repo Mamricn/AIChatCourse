@@ -13,5 +13,6 @@ struct Constants {
     
     static let privacyPolicyUrl = "https://www.google.com"
     static let TermsOfServiceUrl = "https://www.google.com"
+    static let accentColorHex = "FF5757"
 }
 
