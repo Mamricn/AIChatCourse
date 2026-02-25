@@ -58,8 +58,6 @@ struct ProfileView: View {
     
     private func loadData() async {
         self.currentUser =  userManager.currentUser
-        print("User z managera:", userManager.currentUser as Any)
-            print("User lokalny:", currentUser as Any)
         
         try? await Task.sleep(for: .seconds(5))
         isLoading = false
@@ -80,12 +78,6 @@ struct ProfileView: View {
                 Circle()
                     .fill(currentUser?.profileColorCalculated ?? .accent)
                     .frame(width: 100, height: 100)
-
-                // 👇 DEBUG TEXT
-                Text(userManager.currentUser?.profileColorHex ?? "HEX NIL")
-                    .font(.caption)
-                    .foregroundStyle(.red)
-
             }
             .frame(maxWidth: .infinity)
             .removeListRowFormating()
@@ -179,6 +171,6 @@ struct ProfileView: View {
 
 #Preview {
     ProfileView()
-        .environment(UserManager(service: MockUserService(user: .mock)))
+        .environment(UserManager(services: MockUserServices(user: .mock)))
         .environment(AppState())
 }
