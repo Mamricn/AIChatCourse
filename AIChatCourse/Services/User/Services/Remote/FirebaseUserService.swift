@@ -11,7 +11,7 @@ import SwiftfulFirestore
 
 
 
-typealias ListenerRegistration = FirebaseFirestore.ListenerRegistration
+//typealias ListenerRegistration = FirebaseFirestore.ListenerRegistration
 
 
 struct FirebaseUserService: RemoteUserService{
