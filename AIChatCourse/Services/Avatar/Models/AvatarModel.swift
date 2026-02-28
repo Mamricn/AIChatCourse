@@ -10,13 +10,13 @@ import Foundation
 
 
 
-struct AvatarModel: Hashable {
+struct AvatarModel: Hashable, Codable {
     let avatarId: String
     let name: String?
     let characterOption: CharacterOption?
     let characterAction: CharacterAction?
     let characterLocation: CharacterLocation?
-    let profileImageName: String?
+    private(set) var profileImageName: String?
     let authId: String?
     let dateCreated: Date?
     
@@ -43,6 +43,25 @@ struct AvatarModel: Hashable {
     var characterDescription: String{
         AvatarDescriptionBuilder(avatar: self).characterDescription
     }
+    
+    
+    mutating func updateImage(imageName: String) {
+        profileImageName = imageName
+    }
+    
+    
+    
+    enum CodingKeys: String, CodingKey {
+        case avatarId = "avatar_id"
+        case name
+        case characterOption = "character_option"
+        case characterAction = "character_action"
+        case characterLocation = "character_location"
+        case profileImageName = "profile_image_name"
+        case authId = "auth_id"
+        case dateCreated = "date_created"
+    }
+    
     
     static var mock: Self{
         mocks[0]
