@@ -8,12 +8,15 @@
 import SwiftUI
 
 struct CategoryListView: View {
+    @Environment(AvatarManager.self) private var avatarManager
     
     @Binding var path: [NavigationPathOption]
     
     var category: CharacterOption = .default
     var imageName: String = Constants.randomImage
-    @State private var avatars: [AvatarModel] = AvatarModel.mocks
+    @State private var avatars: [AvatarModel] = []
+    @State private var showAlert: AnyAppAlert?
+    @State private var isLoading: Bool = true
     
     
     var body: some View {
@@ -27,24 +30,50 @@ struct CategoryListView: View {
             .removeListRowFormating()
             
             
-            ForEach(avatars, id: \.self){ avatar in
-                CustomListCellView(
-                    title: avatar.name,
-                    subtitle: avatar.characterDescription,
-                    imageName: avatar.profileImageName
-                )
-                .anyButton(.highlight, action: {
-                    onAvatarPressed(avatar: avatar)
-                })
-                .removeListRowFormating()
-                
+            if avatars.isEmpty && isLoading{
+                ProgressView()
+                    .padding(40)
+                    .frame(maxWidth: .infinity)
+                    .listRowSeparator(.hidden)
+                    .removeListRowFormating()
+                    
+            } else {
+                ForEach(avatars, id: \.self){ avatar in
+                    CustomListCellView(
+                        title: avatar.name,
+                        subtitle: avatar.characterDescription,
+                        imageName: avatar.profileImageName
+                    )
+                    .anyButton(.highlight, action: {
+                        onAvatarPressed(avatar: avatar)
+                    })
+                    .removeListRowFormating()
+                    
+                }
             }
             
             
+            
+            
         }
+        .showCustomAlert(alert: $showAlert)
         .ignoresSafeArea(edges: .all)
         .listStyle(PlainListStyle())
+        .task {
+            await loadAvatars()
+        }
     }
+    
+    private func loadAvatars() async {
+        do {
+            avatars = try await avatarManager.getAvatarForCategory(category: category)
+        } catch {
+            showAlert = AnyAppAlert(error: error)
+        }
+        
+        isLoading = false
+    }
+    
     
     private func onAvatarPressed(avatar: AvatarModel){
         path.append(.chat(avatarId: avatar.avatarId))
@@ -54,6 +83,7 @@ struct CategoryListView: View {
 
 #Preview {
     CategoryListView(path: .constant([]))
+        .environment(AvatarManager(services: MockAvatarService()))
 }
 
 //

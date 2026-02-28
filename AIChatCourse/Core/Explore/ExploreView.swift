@@ -10,10 +10,13 @@ import SwiftUI
 
 
 struct ExploreView: View {
-    let avatar = AvatarModel.mock
-    @State private var featureAvatars: [AvatarModel] = AvatarModel.mocks
+    
+    @Environment(AvatarManager.self) private var avatarManager
+    
+    
+    @State private var featureAvatars: [AvatarModel] = []
     @State private var categories: [CharacterOption] = CharacterOption.allCases
-    @State private var popularAvatars: [AvatarModel] = AvatarModel.mocks
+    @State private var popularAvatars: [AvatarModel] = []
     
     @State private var path: [NavigationPathOption] = []
     
@@ -23,13 +26,33 @@ struct ExploreView: View {
         NavigationStack(path: $path) {
             
             List {
-                featuredSection
-                categorySection
-                popularSection
+                
+                if featureAvatars.isEmpty && popularAvatars.isEmpty {
+                    ProgressView()
+                        .padding(40)
+                        .frame(maxWidth: .infinity)
+                        .removeListRowFormating()
+                }
+                
+                if !featureAvatars.isEmpty {
+                    featuredSection
+                }
+                
+                if !popularAvatars.isEmpty {
+                    categorySection
+                    popularSection
+                }
               
             }
-                .navigationTitle("Expplore")
+                .navigationTitle("Explore")
                 .navigationDestinationForCoreModule(path: $path)
+                .task {
+                    await loadFeatureAvatars()
+                    print("loaded feature avatars")
+                }
+                .task {
+                    await loadPopularAvatars()
+                }
         }
     }
     
@@ -37,8 +60,29 @@ struct ExploreView: View {
     
     
     
+    private func loadFeatureAvatars() async {
+        
+        guard featureAvatars.isEmpty else { return }
+        
+        do {
+            featureAvatars =  try await avatarManager.getFeaturedAvatars()
+
+        } catch {
+            print("error loading feature avatars \(error)")
+        }
+    }
     
     
+    private func loadPopularAvatars() async {
+        
+        guard popularAvatars.isEmpty else { return }
+        
+        do {
+            popularAvatars =  try await avatarManager.getPopularAvatars()
+        } catch {
+            print("error loading popular avatars \(error)")
+        }
+    }
     
     private var featuredSection: some View{
         Section {
@@ -49,11 +93,11 @@ struct ExploreView: View {
                         subtitle: avatar.characterDescription,
                         imageName: avatar.profileImageName
                     )
-                    
+                    .anyButton(.plain) {
+                        onAvatarPressed(avatar: avatar)
+                    }
                 }
-                .anyButton(.plain) {
-                    onAvatarPressed(avatar: avatar)
-                }
+               
             }
             .removeListRowFormating()
             
@@ -143,4 +187,5 @@ struct ExploreView: View {
 
 #Preview {
     ExploreView()
+        .environment(AvatarManager(services: FirebaseAvatarService()))
 }
