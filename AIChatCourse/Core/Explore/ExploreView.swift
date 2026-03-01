@@ -12,11 +12,14 @@ import SwiftUI
 struct ExploreView: View {
     
     @Environment(AvatarManager.self) private var avatarManager
-    
+   
+    @State private var categories: [CharacterOption] = CharacterOption.allCases
     
     @State private var featureAvatars: [AvatarModel] = []
-    @State private var categories: [CharacterOption] = CharacterOption.allCases
     @State private var popularAvatars: [AvatarModel] = []
+    @State private var isLoadingFeatured: Bool = true
+    @State private var isLoadingPopular: Bool = true
+
     
     @State private var path: [NavigationPathOption] = []
     
@@ -28,11 +31,17 @@ struct ExploreView: View {
             List {
                 
                 if featureAvatars.isEmpty && popularAvatars.isEmpty {
-                    ProgressView()
-                        .padding(40)
-                        .frame(maxWidth: .infinity)
-                        .removeListRowFormating()
+                   
+                    ZStack{
+                        if isLoadingFeatured || isLoadingPopular {
+                            loadingIndicador
+                        } else {
+                            errorMessageView
+                        }
+                    }
+                    .removeListRowFormating()
                 }
+                
                 
                 if !featureAvatars.isEmpty {
                     featuredSection
@@ -48,7 +57,6 @@ struct ExploreView: View {
                 .navigationDestinationForCoreModule(path: $path)
                 .task {
                     await loadFeatureAvatars()
-                    print("loaded feature avatars")
                 }
                 .task {
                     await loadPopularAvatars()
@@ -56,8 +64,46 @@ struct ExploreView: View {
         }
     }
     
+
     
     
+    private var loadingIndicador: some View {
+        ProgressView()
+            .padding(40)
+            .frame(maxWidth: .infinity)
+
+    }
+    
+    private var errorMessageView: some View {
+        VStack(alignment: .center, spacing: 8){
+            Text("Error")
+                .font(.headline)
+            Text("Please check your intener connection and try again.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Button("Try again") {
+                onTryAgainPressed()
+            }
+            .foregroundStyle(.blue)
+        }
+        .frame(maxWidth: .infinity)
+        .multilineTextAlignment(.center)
+        .padding(40)
+
+    }
+    
+    private func onTryAgainPressed(){
+        isLoadingPopular = true
+        isLoadingFeatured = true
+        Task {
+            try await Task.sleep(nanoseconds: 233344443)
+            await loadFeatureAvatars()
+        }
+        Task {
+            try await Task.sleep(nanoseconds: 234444433)
+            await loadPopularAvatars()
+        }
+    }
     
     
     private func loadFeatureAvatars() async {
@@ -70,6 +116,7 @@ struct ExploreView: View {
         } catch {
             print("error loading feature avatars \(error)")
         }
+        isLoadingFeatured = false
     }
     
     
@@ -82,7 +129,10 @@ struct ExploreView: View {
         } catch {
             print("error loading popular avatars \(error)")
         }
+        isLoadingPopular = false
     }
+    
+    
     
     private var featuredSection: some View{
         Section {
@@ -185,7 +235,17 @@ struct ExploreView: View {
     }
 }
 
-#Preview {
+#Preview("Has data"){
     ExploreView()
-        .environment(AvatarManager(service: FirebaseAvatarService()))
+        .environment(AvatarManager(service: MockAvatarService(deley: 0)))
 }
+#Preview("No data"){
+    ExploreView()
+        .environment(AvatarManager(service: MockAvatarService(avatars: [])))
+}
+
+#Preview("Slow loading"){
+    ExploreView()
+        .environment(AvatarManager(service: MockAvatarService(deley: 10)))
+}
+

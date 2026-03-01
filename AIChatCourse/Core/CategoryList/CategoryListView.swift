@@ -30,13 +30,21 @@ struct CategoryListView: View {
             .removeListRowFormating()
             
             
-            if avatars.isEmpty && isLoading{
+            if isLoading{
                 ProgressView()
                     .padding(40)
                     .frame(maxWidth: .infinity)
                     .listRowSeparator(.hidden)
                     .removeListRowFormating()
                     
+            } else if avatars.isEmpty{
+                Text("No avatars found 😭")
+                    .frame(maxWidth: .infinity)
+                    .padding(40)
+                    .foregroundStyle(.secondary)
+                    .listRowSeparator(.hidden)
+                    .removeListRowFormating()
+                
             } else {
                 ForEach(avatars, id: \.self){ avatar in
                     CustomListCellView(
@@ -81,11 +89,26 @@ struct CategoryListView: View {
     
 }
 
-#Preview {
+#Preview("Has data") {
     CategoryListView(path: .constant([]))
         .environment(AvatarManager(service: MockAvatarService()))
 }
+#Preview("No data") {
+    CategoryListView(path: .constant([]))
+        .environment(AvatarManager(service: MockAvatarService(avatars: [])))
+}
+#Preview("Slow loading") {
+    CategoryListView(path: .constant([]))
+        .environment(AvatarManager(service: MockAvatarService(deley: 10)))
+}
+#Preview("Error loading") {
+    CategoryListView(path: .constant([]))
+        .environment(AvatarManager(service: MockAvatarService(deley: 5, showError: true)))
+}
+
 
 //
 //
 //aha czyli kilkam wybiera z niego avatarId przypisuje do path array potem otwiera to bo się znajduje w enum i tam jest zapisane żeby otworzyć ChatView(avatarId: "teacher01") I juz w data base sa profile I szuka tego z avatarId == teacher01 I go otwiera dobrze rozumiem?
+
+
