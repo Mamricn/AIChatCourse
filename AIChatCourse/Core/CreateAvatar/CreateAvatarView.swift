@@ -210,7 +210,8 @@ struct CreateAvatarView: View {
                     characterLocation: characterLocation,
                     profileImageName: nil,
                     authId: uid,
-                    dateCreated: .now
+                    dateCreated: .now,
+                    clickCount: 0
                 )
                 
                 //UPLOAD!

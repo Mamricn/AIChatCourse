@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct MockAvatarService: RemoteAvatarService {
+    func incrementAvatarClickCount(avatarId: String) async throws {
+        
+    }
+    
     func getAvatar(id: String) async throws -> AvatarModel {
         try await Task.sleep(for: .seconds(2))
 

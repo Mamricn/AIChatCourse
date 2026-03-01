@@ -45,9 +45,13 @@ struct ProfileView: View {
         .sheet(isPresented: $showSettingsView) {
             SettingsView()
         }
-        .fullScreenCover(isPresented: $showCreateAvatarView) {
+        .fullScreenCover(isPresented: $showCreateAvatarView, onDismiss: {
+            Task {
+                await loadData()
+            }
+        }, content: {
             CreateAvatarView()
-        }
+        })
         .task{
             await loadData()
         }
@@ -64,8 +68,8 @@ struct ProfileView: View {
         
         do {
             let uid = try authManager.getAuthId()
-            
             myAvatars = try await avatarManager.getAvatarsForAuthor(userId: uid)
+            
         } catch {
             print("Failed to fetch user avatars.")
         }
