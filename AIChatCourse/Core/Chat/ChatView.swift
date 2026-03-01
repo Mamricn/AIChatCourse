@@ -13,9 +13,11 @@ import SwiftUI
 
 struct ChatView: View {
     
+    @Environment(AvatarManager.self) private var avatarManager
+    
     
     @State private var chatMessages: [ChatMessageModel] = ChatMessageModel.mocks
-    @State private var avatar: AvatarModel? = .mock
+    @State private var avatar: AvatarModel? 
     @State private var currentUser: UserModel? = .mock
     @State private var textFieldText: String = ""
     @State private var scrollPosition: String?
@@ -59,8 +61,23 @@ struct ChatView: View {
                 profileModal(avatar: avatar)
             }
         }
+        .task {
+            await loadAvatar()
+        }
     }
     
+    
+    private func loadAvatar() async {
+        do {
+            let avatar = try await avatarManager.getAvatar(id: avatarId)
+            self.avatar = avatar
+            try? avatarManager.addRecentAvatar(avatar: avatar)
+            
+            
+        } catch {
+            print("Error loading avatar \(error)")
+        }
+    }
     
     
     private var scrollViewSection: some View {
@@ -169,6 +186,8 @@ struct ChatView: View {
     }
     
     
+    
+    
     private func onChatSettingsPressed () {
         showChatSettings = AnyAppAlert(
             title: "",
@@ -198,5 +217,6 @@ struct ChatView: View {
 #Preview {
     NavigationStack{
         ChatView()
+            .environment(AvatarManager(service: MockAvatarService()))
     }
 }

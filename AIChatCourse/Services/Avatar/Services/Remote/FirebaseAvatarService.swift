@@ -9,7 +9,7 @@
 import FirebaseFirestore
 import SwiftfulFirestore
 
-struct FirebaseAvatarService: AvatarService {
+struct FirebaseAvatarService: RemoteAvatarService {
     
     
     var collection: CollectionReference {
@@ -67,6 +67,10 @@ struct FirebaseAvatarService: AvatarService {
         try await collection
             .whereField(AvatarModel.CodingKeys.authId.rawValue, isEqualTo: userId)
             .getAllDocuments( )
+    }
+    
+    func getAvatar(id: String) async throws -> AvatarModel {
+        try await collection.getDocument(id: id)
     }
     
     
