@@ -10,7 +10,6 @@ import SwiftUI
 
 
 
-
 struct SettingsView: View {
     @Environment(AppState.self) private var appState
     @Environment(AuthManager.self) private var authManager
