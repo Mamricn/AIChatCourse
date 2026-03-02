@@ -16,12 +16,12 @@ import SwiftUI
 class AvatarManager {
     
     
-    private var local: LocalAvatarPersistance
+    private var local: LocalAvatarPersistence
     private let remote: RemoteAvatarService
 
-    init(service: RemoteAvatarService, local: LocalAvatarPersistance? = nil) {
+    init(service: RemoteAvatarService, local: LocalAvatarPersistence? = nil) {
         self.remote = service
-        self.local = local ?? MockLocalAvatarPersistance()
+        self.local = local ?? MockLocalAvatarPersistence()
     }
     
     func addRecentAvatar(avatar: AvatarModel) async throws {
@@ -63,6 +63,14 @@ class AvatarManager {
     
     func getAvatar(id: String) async throws -> AvatarModel {
         try await remote.getAvatar(id: id)
+    }
+    
+    func removeAuthorIdFromAvatar(avatarId: String) async throws {
+        try await remote.removeAuthorIdFromAvatar(avatarId: avatarId)
+    }
+    
+    func removeAuthorIdFromAllAvatars(userId: String) async throws {
+        try await remote.removeAuthorIdFromAllAvatars(userId: userId)
     }
     
     

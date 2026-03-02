@@ -9,7 +9,7 @@
 import SwiftUI
 
 
-struct FileManagerUserPresistance: LocalUserPersistance {
+struct FileManagerUserPresistance: LocalUserPersistence {
     private let userDocumentkey = "current_user"
     
     func getCurrentUser() -> UserModel? {

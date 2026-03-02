@@ -15,6 +15,7 @@ struct SettingsView: View {
     @Environment(AppState.self) private var appState
     @Environment(AuthManager.self) private var authManager
     @Environment(UserManager.self) private var userManager
+    @Environment(AvatarManager.self) private var avatarManager
     @Environment(\.dismiss) private var dismiss
     
     
@@ -205,10 +206,18 @@ struct SettingsView: View {
     private func onDeleteAccountConfirmed() {
         Task {
             do {
+                let uid =  try authManager.getAuthId()
+                
                 // it deletes profile
-                try await authManager.deleteAccount()
+                async let deleteAuth: () = authManager.deleteAccount()
                 // it deletes all files from account
-                try await userManager.deleteCurrentUser()
+                async let deleteUser: () = userManager.deleteCurrentUser()
+                async let deleteAvatar: () = avatarManager.removeAuthorIdFromAllAvatars(userId: uid)
+                
+                
+                let (_,_,_) = await (try deleteAuth, try deleteUser, try deleteAvatar)
+                
+                
                await dismissScreen()
             } catch let error  {
                 showAlert = AnyAppAlert(error: error)
@@ -240,17 +249,20 @@ fileprivate extension View {
     SettingsView()
         .environment(AuthManager(service: MockAuthService(user: nil)))
         .environment(UserManager(services: MockUserServices(user: nil)))
+        .environment(AvatarManager(service: MockAvatarService()))
         .environment(AppState())
 }
 #Preview("Anynonmus") {
     SettingsView()
         .environment(AuthManager(service: MockAuthService(user: UserAuthInfo.mock(isAnonymous: true))))
         .environment(UserManager(services: MockUserServices(user: .mock)))
+        .environment(AvatarManager(service: MockAvatarService()))
         .environment(AppState())
 }
 #Preview("Not anonymous") {
     SettingsView()
         .environment(AuthManager(service: MockAuthService(user: UserAuthInfo.mock(isAnonymous: false))))
         .environment(UserManager(services: MockUserServices(user: .mock)))
+        .environment(AvatarManager(service: MockAvatarService()))
         .environment(AppState())
 }

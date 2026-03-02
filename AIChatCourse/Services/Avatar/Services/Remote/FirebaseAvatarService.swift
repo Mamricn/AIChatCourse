@@ -72,7 +72,29 @@ struct FirebaseAvatarService: RemoteAvatarService {
     }
     
     
+    func removeAuthorIdFromAvatar(avatarId: String) async throws {
+        try await collection.document(avatarId).updateData([
+            AvatarModel.CodingKeys.authId.rawValue: NSNull()
+        ])
+    }
     
+    func removeAuthorIdFromAllAvatars(userId: String) async throws {
+        let avatars = try await getAvatarsForAuthor(userId: userId)
+        
+        
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            
+                for avatar in avatars {
+                    try await removeAuthorIdFromAvatar(avatarId: avatar.id)
+                }
+            try await group.waitForAll()
+        }
+        
+        
+        for avatar in avatars {
+            try await removeAuthorIdFromAvatar(avatarId: avatar.id)
+        }
+    }
     
     
     
@@ -86,6 +108,9 @@ struct FirebaseAvatarService: RemoteAvatarService {
             AvatarModel.CodingKeys.clickCount.rawValue: FieldValue.increment(Int64(1))
         ])
     }
+    
+    
+    
     
     
     
