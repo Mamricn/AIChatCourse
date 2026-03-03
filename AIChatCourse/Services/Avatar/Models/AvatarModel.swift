@@ -92,10 +92,10 @@ struct AvatarModel: Hashable, Codable, StringIdentifiable {
     
     static var mocks: [Self] {
         [
-            AvatarModel(avatarId: UUID().uuidString, name: "Alpha", characterOption: .alien, characterAction: .smiling, characterLocation: .park, profileImageName: Constants.randomImage, authId: UUID().uuidString, dateCreated: .now, clickCount: 10),
-            AvatarModel(avatarId: UUID().uuidString, name: "Beta", characterOption: .dog, characterAction: .eating, characterLocation: .forest, profileImageName: Constants.randomImage, authId: UUID().uuidString, dateCreated: .now, clickCount: 5),
-            AvatarModel(avatarId: UUID().uuidString, name: "Gama", characterOption: .cat, characterAction: .drinking, characterLocation: .museum, profileImageName: Constants.randomImage, authId: UUID().uuidString, dateCreated: .now, clickCount: 100),
-            AvatarModel(avatarId: UUID().uuidString, name: "Delta", characterOption: .woman, characterAction: .shoping, characterLocation: .park, profileImageName: Constants.randomImage, authId: UUID().uuidString, dateCreated: .now, clickCount: 50)
+            AvatarModel(avatarId: "mock_ava_1", name: "Alpha", characterOption: .alien, characterAction: .smiling, characterLocation: .park, profileImageName: Constants.randomImage, authId: "mock_ava_1", dateCreated: .now, clickCount: 10),
+            AvatarModel(avatarId: "mock_ava_1", name: "Beta", characterOption: .dog, characterAction: .eating, characterLocation: .forest, profileImageName: Constants.randomImage, authId: UUID().uuidString, dateCreated: .now, clickCount: 5),
+            AvatarModel(avatarId: "mock_ava_1", name: "Gama", characterOption: .cat, characterAction: .drinking, characterLocation: .museum, profileImageName: Constants.randomImage, authId: UUID().uuidString, dateCreated: .now, clickCount: 100),
+            AvatarModel(avatarId: "mock_ava_1", name: "Delta", characterOption: .woman, characterAction: .shoping, characterLocation: .park, profileImageName: Constants.randomImage, authId: UUID().uuidString, dateCreated: .now, clickCount: 50)
         ]
     }
 }

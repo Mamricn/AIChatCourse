@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ChatMessageModel: Identifiable{
+struct ChatMessageModel: Identifiable, Codable{
     let id: String
     let chatId: String
     let authorId: String?
@@ -36,6 +36,17 @@ struct ChatMessageModel: Identifiable{
         return seenByIds.contains(userId)
         
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case chatId = "chat_id"
+        case authorId = "author_id"
+        case content
+        case seenByIds = "seen_by_ids"
+        case dateCrated = "date_created"
+    }
+    
+    
     
     static func newUserMessage(chatId: String, userId: String, message: AIChatModel) -> Self {
         ChatMessageModel(
@@ -71,7 +82,7 @@ struct ChatMessageModel: Identifiable{
                ChatMessageModel(
                    id: "msg_001",
                    chatId: "chat_001",
-                   authorId: "user_001",
+                   authorId: UserAuthInfo.mock().uid,
                    content: AIChatModel(role: .user, content: "Hello how are you?"),
                    seenByIds: ["user_001"],
                    dateCrated: now.addingTimeInterval(days: -2, hours: -3)
@@ -79,7 +90,7 @@ struct ChatMessageModel: Identifiable{
                ChatMessageModel(
                    id: "msg_002",
                    chatId: "chat_001",
-                   authorId: "user_002",
+                   authorId: AvatarModel.mock.avatarId,
                    content: AIChatModel(role: .assistant, content: "Im doing well, thanks for asking!"),
                    seenByIds: ["user_001", "user_002"],
                    dateCrated: now.addingTimeInterval(days: -2, hours: -2, minutes: -40)
@@ -87,7 +98,7 @@ struct ChatMessageModel: Identifiable{
                ChatMessageModel(
                    id: "msg_003",
                    chatId: "chat_001",
-                   authorId: "user_001",
+                   authorId: UserAuthInfo.mock().uid,
                    content: AIChatModel(role: .user, content: "Alright"),
                    seenByIds: ["user_001"],
                    dateCrated: now.addingTimeInterval(days: -2, hours: -2, minutes: -15)
@@ -95,7 +106,7 @@ struct ChatMessageModel: Identifiable{
                ChatMessageModel(
                    id: "msg_004",
                    chatId: "chat_002",
-                   authorId: "user_003",
+                   authorId: AvatarModel.mock.avatarId,
                    content: AIChatModel(role: .assistant, content: "Welcome to the new chat!"),
                    seenByIds: ["user_003"],
                    dateCrated: now.addingTimeInterval(days: -1, hours: -6)
@@ -103,7 +114,7 @@ struct ChatMessageModel: Identifiable{
                ChatMessageModel(
                    id: "msg_005",
                    chatId: "chat_002",
-                   authorId: "user_001",
+                   authorId: UserAuthInfo.mock().uid,
                    content: AIChatModel(role: .user, content: "Nice"),
                    seenByIds: ["user_001", "user_003"],
                    dateCrated: now.addingTimeInterval(hours: -3, minutes: -20)
@@ -111,7 +122,7 @@ struct ChatMessageModel: Identifiable{
                ChatMessageModel(
                    id: "msg_006",
                    chatId: "chat_003",
-                   authorId: "user_002",
+                   authorId: AvatarModel.mock.avatarId,
                    content: AIChatModel(role: .assistant, content: "Are we still on for today?"),
                    seenByIds: nil,
                    dateCrated: now.addingTimeInterval(minutes: -25)
