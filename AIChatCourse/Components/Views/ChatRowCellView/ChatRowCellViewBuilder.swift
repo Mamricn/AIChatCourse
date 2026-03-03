@@ -49,7 +49,7 @@ struct ChatRowCellViewBuilder: View {
         if avatar == nil && lastChatMessage == nil{
             return "Error loading data."
         }
-        return lastChatMessage?.content?.content
+        return lastChatMessage?.content?.message
     }
     
     
