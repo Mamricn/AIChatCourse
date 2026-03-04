@@ -47,6 +47,11 @@ struct OpenAIService: AIService {
         
         let messages = chats.compactMap({$0.toOpenAIModel()})
         
+        for message in messages {
+            print(message)
+        }
+        
+        
         let query = ChatQuery( messages: messages, model: .gpt3_5Turbo )
         
         

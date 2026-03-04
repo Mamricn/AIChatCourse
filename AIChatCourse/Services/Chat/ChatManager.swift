@@ -10,6 +10,8 @@
 protocol chatService: Sendable {
     func createNewChat(chat: ChatModel) async throws
     func addChatMessage(chatId: String, message: ChatMessageModel) async throws
+    func getChat(userId: String, avatarId: String) async throws -> ChatModel?
+    func streamChatMessages(chatId: String) -> AsyncThrowingStream<[ChatMessageModel], Error>
     
 }
 
@@ -22,6 +24,16 @@ struct MockChatService: chatService {
     
     func createNewChat(chat: ChatModel) async throws {
         
+    }
+    func getChat(userId: String, avatarId: String) async throws -> ChatModel?{
+        return ChatModel.mock
+    }
+    
+    
+    func streamChatMessages(chatId: String) -> AsyncThrowingStream<[ChatMessageModel], Error> {
+        AsyncThrowingStream{ continuation in
+            
+        }
     }
 }
 
@@ -45,6 +57,21 @@ struct FirebaseChatService: chatService {
         try collection.document(chat.id).setData(from: chat, merge: true)
     }
     
+    
+    func getChat(userId: String, avatarId: String) async throws -> ChatModel? {
+//        let result: [ChatModel] = try await collection
+//            .whereField(ChatModel.CodingKeys.userId.rawValue, isEqualTo: userId)
+//            .whereField(ChatModel.CodingKeys.avatarId.rawValue, isEqualTo: avatarId)
+//            .getAllDocuments()
+//        
+//        
+//        return result.first
+        
+        try await collection.getDocument(id: ChatModel.chatId(userId: userId, avatarId: avatarId))
+    }
+    
+    
+    
     func addChatMessage(chatId: String, message: ChatMessageModel) async throws {
         // add  the message to chat sub-collection
         try  messagesCollection(chatId: chatId).document(message.id).setData(from: message, merge: true)
@@ -55,6 +82,12 @@ struct FirebaseChatService: chatService {
             ChatModel.CodingKeys.dateModyfired.rawValue: Date.now
         ])
     }
+    
+    func streamChatMessages(chatId: String) -> AsyncThrowingStream<[ChatMessageModel], Error> {
+        messagesCollection(chatId: chatId).streamAllDocuments()
+    }
+    
+    
     
 }
 
@@ -77,6 +110,15 @@ class ChatManager {
         try await service.addChatMessage(chatId: chatId, message: message)
     }
     
+    func getChat(userId: String, avatarId: String) async throws -> ChatModel? {
+        try await service.getChat(userId: userId, avatarId: avatarId)
+    }
+    
+    
+    
+    func streamChatMessages(chatId: String)  -> AsyncThrowingStream<[ChatMessageModel], Error>  {
+          service.streamChatMessages(chatId: chatId)
+    }
     
 }
 

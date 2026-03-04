@@ -20,8 +20,8 @@ struct ChatView: View {
     @Environment(AIManager.self) private var aiManager
     
     
-    @State private var chatMessages: [ChatMessageModel] = ChatMessageModel.mocks
-    @State private var avatar: AvatarModel? 
+    @State private var chatMessages: [ChatMessageModel] = []
+    @State private var avatar: AvatarModel?
     @State private var currentUser: UserModel?
     @State private var chat: ChatModel? = nil
     
@@ -36,6 +36,7 @@ struct ChatView: View {
     @State private var showAlert: AnyAppAlert?
     @State private var showChatSettings: AnyAppAlert?
     @State private var isGeneratingResponse: Bool = false
+    @State private var listenerTask: Task<Void, Never>?
 
     var avatarId: String = AvatarModel.mock.avatarId
     
@@ -80,8 +81,16 @@ struct ChatView: View {
         .task {
             await loadAvatar()
         }
+        .task {
+            await loadChat()
+            await listenForChatMessages()
+        }
         .onAppear{
             loadCurrentUser()
+        }
+        .onDisappear{
+            listenerTask?.cancel()
+            listenerTask = nil
         }
     }
     
@@ -102,6 +111,62 @@ struct ChatView: View {
             print("Error loading avatar \(error)")
         }
     }
+    
+    private func loadChat() async {
+        do {
+            let uid = try authManager.getAuthId()
+            chat = try await chatManager.getChat(userId: uid, avatarId: avatarId)
+            print("Success loading chat")
+            
+        } catch {
+            print("Error loading chat")
+        }
+    }
+    
+    
+    private func getChatId() throws -> String {
+        guard let chat else {
+            throw ChatViewError.noChat
+        }
+        return chat.id
+    }
+    
+    private func listenForChatMessages() async {
+        
+        
+        listenerTask?.cancel()
+        listenerTask = Task {
+            do {
+                guard chat != nil else { return }
+                
+                
+                let chatId = try getChatId()
+                for try await value in chatManager.streamChatMessages(chatId: chatId){
+                    chatMessages = value.sorted(by: {$0.dateCratedCalculated < $1.dateCratedCalculated})
+                    
+                }
+            }
+            catch{
+                print("Failed to attached chat message listener. \(error)")
+            }
+        }
+    }
+        
+//        do {
+//            let chatId = try getChatId()
+//            for try await value in chatManager.streamChatMessages(chatId: chatId) {
+//                chatMessages = value.sorted(by: {$0.dateCratedCalculated < $1.dateCratedCalculated})
+//                scrollPosition = chatMessages.last?.id
+//
+//            }
+//            
+//        } catch {
+//            print("Failed to attached chat message listener.")
+//        }
+//    }
+//    
+    
+    
     
     
     private var scrollViewSection: some View {
@@ -215,17 +280,23 @@ struct ChatView: View {
                 
                 //Upload User chat
                 try await chatManager.addChatMessage(chatId: chat.id, message: message)
-                chatMessages.append(message)
-                
-                
-                // clear text field & scroll to bottom
-                scrollPosition = message.id
                 textFieldText = ""
+                
+                
                 
                 
                 //Generate AI Response
                 isGeneratingResponse = true
-                let aiChats = chatMessages.compactMap{$0.content}
+                var aiChats = chatMessages.compactMap{$0.content}
+                if let avatarDescription = avatar?.characterDescription {
+                    let systemMessage = AIChatModel(
+                        role: .system,
+                        content: "You are a \(avatarDescription)"
+                    )
+                    aiChats.insert(systemMessage, at: 0)
+                }
+                
+                
                 let response = try await aiManager.generateText(chats: aiChats)
                 
                 
@@ -237,7 +308,7 @@ struct ChatView: View {
                 )
                 // Upload Ai chat
                 try await chatManager.addChatMessage(chatId: chat.id, message: newAIMessage)
-                chatMessages.append(newAIMessage)
+
                
 
             } catch let error {
@@ -261,7 +332,11 @@ struct ChatView: View {
             avatarId: avatarId
         )
         try await chatManager.createNewChat(chat: newChat)
+        chat = newChat
+        await listenForChatMessages()
+            
         return newChat
+        
     }
     
     

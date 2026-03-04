@@ -27,17 +27,20 @@ struct FirebaseUserService: RemoteUserService{
     }
     
     
-    func streamUser(userId: String) -> AsyncThrowingStream<UserModel, Error> {
-        collection.streamDocument(id: userId) // ← that's it, package handles everything
-    }
-    
-    
     func markOnboardingCompleted(userId: String, profileColorHex: String) async throws {
         try await collection.document(userId).updateData([
             UserModel.CodingKeys.didCompleteOnboarding.rawValue: true,
             UserModel.CodingKeys.profileColorHex.rawValue: profileColorHex
         ])
     }
+    
+    
+    
+    
+    func streamUser(userId: String) -> AsyncThrowingStream<UserModel, Error> {
+        collection.streamDocument(id: userId) // ← that's it, package handles everything
+    }
+    
     
     
     func deleteUser(userId: String) async throws {
