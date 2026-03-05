@@ -11,7 +11,7 @@ import IdentifiableByString
 
 
 
-struct ChatModel: Identifiable, Codable, StringIdentifiable {
+struct ChatModel: Identifiable, Codable, Hashable, StringIdentifiable {
     
      
     let id: String
@@ -56,29 +56,29 @@ struct ChatModel: Identifiable, Codable, StringIdentifiable {
             return [
                 ChatModel(
                     id: "mock_chat_001",
-                    userId: "user_001",
-                    avatarId: "avatar_001",
+                    userId: UserAuthInfo.mock().uid,
+                    avatarId: AvatarModel.mocks.randomElement()!.avatarId,
                     dateCreated: now.addingTimeInterval(days: -10),
                     dateModyfired: now.addingTimeInterval(days: -2, hours: -3)
                 ),
                 ChatModel(
                     id: "mock_chat_002",
-                    userId: "user_002",
-                    avatarId: "avatar_002",
+                    userId: UserAuthInfo.mock().uid,
+                    avatarId: AvatarModel.mocks.randomElement()!.avatarId,
                     dateCreated: now.addingTimeInterval(days: -3, hours: -6),
                     dateModyfired: now.addingTimeInterval(hours: -2)
                 ),
                 ChatModel(
                     id: "mock_chat_003",
-                    userId: "user_003",
-                    avatarId: "avatar_003",
+                    userId: UserAuthInfo.mock().uid,
+                    avatarId: AvatarModel.mocks.randomElement()!.avatarId,
                     dateCreated: now.addingTimeInterval(days: -10),
                     dateModyfired: now.addingTimeInterval(days: -2, hours: -3)
                 ),
                 ChatModel(
                     id: "mock_chat_004",
-                    userId: "user_004",
-                    avatarId: "avatar_004",
+                    userId: UserAuthInfo.mock().uid,
+                    avatarId: AvatarModel.mocks.randomElement()!.avatarId,
                     dateCreated: now.addingTimeInterval(days: -10),
                     dateModyfired: now.addingTimeInterval(days: -2, hours: -3)
                 ),

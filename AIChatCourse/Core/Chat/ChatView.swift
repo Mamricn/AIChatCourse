@@ -23,7 +23,7 @@ struct ChatView: View {
     @State private var chatMessages: [ChatMessageModel] = []
     @State private var avatar: AvatarModel?
     @State private var currentUser: UserModel?
-    @State private var chat: ChatModel? = nil
+    @State  var chat: ChatModel? = nil
     
     
     
@@ -142,7 +142,8 @@ struct ChatView: View {
                 
                 let chatId = try getChatId()
                 for try await value in chatManager.streamChatMessages(chatId: chatId){
-                    chatMessages = value.sorted(by: {$0.dateCratedCalculated < $1.dateCratedCalculated})
+                    chatMessages = value.sortedByKeyPath(keyPath: \.dateCratedCalculated, ascending: true)
+//                        .sorted(by: {$0.dateCratedCalculated < $1.dateCratedCalculated})
                     
                 }
             }
