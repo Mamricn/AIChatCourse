@@ -18,6 +18,7 @@ struct ChatView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(AvatarManager.self) private var avatarManager
     @Environment(AIManager.self) private var aiManager
+    @Environment(\.dismiss) private var dismiss
     
     
     @State private var chatMessages: [ChatMessageModel] = []
@@ -350,10 +351,10 @@ struct ChatView: View {
                 AnyView(
                     Group{
                         Button("Report User / Chat", role: .destructive) {
-                            
+                            onReportChatPressed()
                         }
                         Button("Delete Chat", role: .destructive) {
-                            
+                            onDeleteChatPressed()
                         }
                     }
                 )
@@ -361,6 +362,44 @@ struct ChatView: View {
         )
         
         
+    }
+    
+    private func onReportChatPressed(){
+        Task {
+            do {
+                let uid = try authManager.getAuthId()
+                let chatId = try getChatId()
+                try await chatManager.reportChat(chatId: chatId, userId: uid)
+                
+                showAlert = AnyAppAlert(
+                    title: "🚨🚨 Reported ",
+                    subtitle: "We will review the chat shortly. You may leave the chat at any time. Thanks for bringing this to our attention."
+                )
+                
+            } catch {
+                showAlert = AnyAppAlert(
+                    title: "Someting went wrong",
+                    subtitle: "Please check your intenert connetction"
+                )
+
+            }
+        }
+    }
+    
+    
+    private func onDeleteChatPressed() {
+        Task{
+            do {
+                let chatId = try getChatId()
+                try await chatManager.deleteChat(chatId: chatId)
+                dismiss()
+            } catch {
+                showAlert = AnyAppAlert(
+                    title: "Someting went wrong",
+                    subtitle: "Please check your intenert connetction"
+                )
+            }
+        }
     }
     
     private func onAvatarImagePressed () {

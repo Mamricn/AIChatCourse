@@ -15,6 +15,7 @@ struct SettingsView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(UserManager.self) private var userManager
     @Environment(AvatarManager.self) private var avatarManager
+    @Environment(ChatManager.self) private var chatManager
     @Environment(\.dismiss) private var dismiss
     
     
@@ -212,9 +213,10 @@ struct SettingsView: View {
                 // it deletes all files from account
                 async let deleteUser: () = userManager.deleteCurrentUser()
                 async let deleteAvatar: () = avatarManager.removeAuthorIdFromAllAvatars(userId: uid)
+                async let deleteChats: () = chatManager.deleteAllChatsForUser(userId: uid)
                 
                 
-                let (_,_,_) = await (try deleteAuth, try deleteUser, try deleteAvatar)
+                let (_,_,_,_) = await (try deleteAuth, try deleteUser, try deleteAvatar, try deleteChats)
                 
                 
                await dismissScreen()
@@ -249,19 +251,22 @@ fileprivate extension View {
         .environment(AuthManager(service: MockAuthService(user: nil)))
         .environment(UserManager(services: MockUserServices(user: nil)))
         .environment(AvatarManager(service: MockAvatarService()))
-        .environment(AppState())
+        .previewEnvironment()
 }
 #Preview("Anynonmus") {
     SettingsView()
         .environment(AuthManager(service: MockAuthService(user: UserAuthInfo.mock(isAnonymous: true))))
         .environment(UserManager(services: MockUserServices(user: .mock)))
         .environment(AvatarManager(service: MockAvatarService()))
-        .environment(AppState())
+        .previewEnvironment()
+
+    
 }
 #Preview("Not anonymous") {
     SettingsView()
         .environment(AuthManager(service: MockAuthService(user: UserAuthInfo.mock(isAnonymous: false))))
         .environment(UserManager(services: MockUserServices(user: .mock)))
         .environment(AvatarManager(service: MockAvatarService()))
-        .environment(AppState())
+        .previewEnvironment()
+
 }
