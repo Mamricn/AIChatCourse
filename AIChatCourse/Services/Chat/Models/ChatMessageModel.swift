@@ -32,7 +32,7 @@ struct ChatMessageModel: Identifiable, Codable, StringIdentifiable{
         self.dateCrated = dateCrated
     }
     
-    var dateCratedCalculated: Date {
+    var dateCreatedCalculated: Date {
         dateCrated ?? .distantPast
     }
     

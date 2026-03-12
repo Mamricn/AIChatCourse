@@ -26,6 +26,10 @@ class ChatManager {
         try await service.addChatMessage(chatId: chatId, message: message)
     }
     
+    func markChatMessageAsSeen(chatId: String, messageId: String, userId: String) async throws {
+        try await service.markChatMessageAsSeen(chatId: chatId, messageId: messageId, userId: userId)
+    }
+    
     func getChat(userId: String, avatarId: String) async throws -> ChatModel? {
         try await service.getChat(userId: userId, avatarId: avatarId)
     }
@@ -57,6 +61,7 @@ class ChatManager {
         
         try await service.reportChat(report: report)
     }
+    
     
     
 }

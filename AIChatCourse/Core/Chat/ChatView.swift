@@ -143,7 +143,7 @@ struct ChatView: View {
                 
                 let chatId = try getChatId()
                 for try await value in chatManager.streamChatMessages(chatId: chatId){
-                    chatMessages = value.sortedByKeyPath(keyPath: \.dateCratedCalculated, ascending: true)
+                    chatMessages = value.sortedByKeyPath(keyPath: \.dateCreatedCalculated, ascending: true)
 //                        .sorted(by: {$0.dateCratedCalculated < $1.dateCratedCalculated})
                     
                 }
@@ -175,6 +175,12 @@ struct ChatView: View {
         ScrollView{
             LazyVStack(spacing: 24){
                 ForEach(chatMessages) { message in
+                    
+                    if messageIsDelayed(message: message) {
+                        timestampView(date: message.dateCreatedCalculated)
+                    }
+
+                    
                     let isCurrentUser = message.authorId == authManager.auth?.uid
                     
                     ChatBubbleViewBuilder(
@@ -185,6 +191,9 @@ struct ChatView: View {
                         imageName: isCurrentUser ? nil : avatar?.profileImageName,
                         onImagePressed: onAvatarImagePressed
                     )
+                    .onAppear {
+                        onMessageDidAppear(message: message)
+                    }
                     .id(message.id)
                 }
             }
@@ -199,6 +208,27 @@ struct ChatView: View {
         .animation(.default, value: scrollPosition)
 
     }
+    
+    
+    private func onMessageDidAppear(message: ChatMessageModel){
+        Task {
+            do {
+                let uid = try authManager.getAuthId()
+                let chatId = try getChatId()
+                
+                guard !message.hasBeenSeenBy(userId: uid) else {
+                    return
+                }
+                try await chatManager.markChatMessageAsSeen(chatId: chatId, messageId: message.id, userId: uid)
+                
+                
+            } catch {
+                print("Faild to mark message as seen.")
+            }
+        }
+    }
+    
+    
     
     
     private var textFieldSection: some View {
@@ -232,6 +262,24 @@ struct ChatView: View {
         
     }
     
+    private func messageIsDelayed(message: ChatMessageModel) -> Bool {
+        let currentMessageDate = message.dateCreatedCalculated
+        
+        guard let index = chatMessages.firstIndex(where: { $0.id == message.id}),
+              chatMessages.indices.contains(index - 1)
+        else {
+            return false
+        }
+        
+        
+        let previousMessageDate = chatMessages[index - 1].dateCreatedCalculated
+        let timeDiff = currentMessageDate.timeIntervalSince(previousMessageDate)
+        
+        let threshold: TimeInterval = 60 * 45
+        return timeDiff > threshold
+    }
+    
+    
     
     private func profileModal(avatar: AvatarModel) -> some View {
         ProfileModalView(
@@ -247,7 +295,17 @@ struct ChatView: View {
             .transition(.slide)
     }
     
-    
+    private func timestampView(date: Date) -> some View {
+        Group {
+            Text(date.formatted(date: .abbreviated, time: .omitted))
+            +
+            Text(" • ")
+            +
+            Text(date.formatted(date: .omitted, time: .shortened))
+        }
+        .foregroundStyle(.secondary)
+        .font(.callout)
+    }
     
     
     

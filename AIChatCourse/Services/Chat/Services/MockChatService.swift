@@ -83,6 +83,9 @@ class MockChatService: @preconcurrency chatService, Sendable {
             }
         }
     }
+    func markChatMessageAsSeen(chatId: String, messageId: String, userId: String) async throws {
+        
+    }
     
     
     
