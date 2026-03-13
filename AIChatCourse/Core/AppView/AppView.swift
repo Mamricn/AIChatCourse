@@ -35,9 +35,17 @@ struct AppView: View {
             }
             .onAppear {
                 logManager
-                    .identyfyUser(userId: "xd", name: "xdd", email: "xdd@wp.pl")
-                
+                .identyfyUser(userId: "xd", name: "xdd", email: "xdd@wp.pl")
                 logManager.addUserPropeties(dict: UserModel.mock.eventParameters)
+                
+                
+                logManager.trackEvent(event: Event.alpha)
+                logManager.trackEvent(event: Event.beta)
+                logManager.trackEvent(event: Event.gamma)
+                logManager.trackEvent(event: Event.delta)
+
+                
+                
             }
             .onChange(of: appState.showTabBar) { _, showToBar in
                 if !showToBar{
@@ -48,6 +56,58 @@ struct AppView: View {
             }
         }
     }
+    
+    
+    enum Event: LoggableEvent {
+        
+        case alpha, beta, gamma, delta
+        
+        var eventName: String{
+            
+            switch self {
+            case .alpha:
+                return "alpha"
+            case .beta:
+                return "beta"
+            case .gamma:
+                return "gamma"
+            case .delta:
+                return "delta"
+            }
+        }
+        
+        var parameters: [String : Any]? {
+            
+            
+            switch self {
+            case .alpha, .beta:
+                return [
+                    "aaa": true,
+                    "bbb": 123
+                ]
+            default:
+                return nil
+                
+            }
+        }
+            
+            var type: LogType {
+                switch self {
+                case .alpha:
+                    return .info
+                case .beta:
+                    return .analytic
+                case .gamma:
+                    return .warning
+                case .delta:
+                    return .severe
+                }
+            }
+        
+    }
+        
+    
+    
     
     
     
