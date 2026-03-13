@@ -38,23 +38,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         
         
-        
         let config: BuildConfiguration
         
         
 #if MOCK
         config = .mock(isSignedIn: true)
-        dependencies = Dependencies(config: .mock(isSignedIn: true))
 #elseif DEV
         config = .dev
-        dependencies = Dependencies(config: .dev)
 #else
         config = .prod
-        dependencies = Dependencies(config: .prod)
 #endif
         
         config.configure()
-        dependencies = Dependencies(config: .prod)
+        dependencies = Dependencies(config: config)
         return true
         
     }
