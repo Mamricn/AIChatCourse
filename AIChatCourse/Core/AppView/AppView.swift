@@ -36,14 +36,21 @@ struct AppView: View {
             .onAppear {
                 logManager
                 .identyfyUser(userId: "xd", name: "xdd", email: "xdd@wp.pl")
-                logManager.addUserPropeties(dict: UserModel.mock.eventParameters)
+                logManager.addUserPropeties(dict: UserModel.mock.eventParameters, isHighPriority: false)
                 
                 
                 logManager.trackEvent(event: Event.alpha)
                 logManager.trackEvent(event: Event.beta)
                 logManager.trackEvent(event: Event.gamma)
                 logManager.trackEvent(event: Event.delta)
-
+                
+                let event = AnyLoggableEvent(
+                    eventName: "MyNewEvent",
+                    parameters: UserModel.mock.eventParameters,
+                    type: .analytic
+                )
+                logManager.trackEvent(event: event)
+                logManager.trackEvent(eventName: "Another event is running")
                 
                 
             }

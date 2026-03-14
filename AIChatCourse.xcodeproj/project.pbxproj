@@ -15,6 +15,7 @@
 		EB96E9312F4B2D5000F28D86 /* SignInAppleAsync in Frameworks */ = {isa = PBXBuildFile; productRef = EB96E9302F4B2D5000F28D86 /* SignInAppleAsync */; };
 		EBA9E7E22F50B55600AFE3C7 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = EBA9E7E12F50B55600AFE3C7 /* OpenAI */; };
 		EBA9E7F42F50FA7B00AFE3C7 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = EBA9E7F32F50FA7B00AFE3C7 /* FirebaseStorage */; };
+		EBE941682F64C0BB00648BF9 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 				EBA9E7F42F50FA7B00AFE3C7 /* FirebaseStorage in Frameworks */,
 				EB93647D2F4E296B00AC3EC2 /* FirebaseFirestore in Frameworks */,
 				EB1548E32F44E96F00EAA55A /* SwiftfulUtilities in Frameworks */,
+				EBE941682F64C0BB00648BF9 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +163,7 @@
 				EB93647F2F4E558D00AC3EC2 /* SwiftfulFirestore */,
 				EBA9E7E12F50B55600AFE3C7 /* OpenAI */,
 				EBA9E7F32F50FA7B00AFE3C7 /* FirebaseStorage */,
+				EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */,
 			);
 			productName = AIChatCourse;
 			productReference = EB12772F2F3A4B79001B6E4E /* AIChatCourse.app */;
@@ -525,7 +528,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AIChatCourse/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat";
+				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat - Dev";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -701,7 +704,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AIChatCourse/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat - Mock";
+				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat - Dev";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -898,6 +901,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EB96E9242F49FEA400F28D86 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB96E9242F49FEA400F28D86 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

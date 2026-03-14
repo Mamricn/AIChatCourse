@@ -94,9 +94,9 @@ email: \(email ?? "Unknown")
     
     
     
-    func addUserPropeties(dict: [String : Any]) {
+    func addUserPropeties(dict: [String : Any], isHighPriority: Bool) {
         var string = """
-📈 Log User Properties 
+📈 Log User Properties (isHighPriority: \(isHighPriority.description))
 
 """
         if printParameters{

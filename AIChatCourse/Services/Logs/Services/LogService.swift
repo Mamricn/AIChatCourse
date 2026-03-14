@@ -9,14 +9,10 @@ import SwiftUI
 
 protocol LogService {
     func identyfyUser(userId: String, name: String?, email: String?)
-    func addUserPropeties(dict: [String: Any])
+    func addUserPropeties(dict: [String: Any], isHighPriority: Bool)
     func deleteUserProfile()
     
     func trackEvent(event: LoggableEvent)
     func trackScreenEvent(event: LoggableEvent)
 }
-protocol LoggableEvent {
-    var eventName: String { get }
-    var parameters: [String: Any]? { get }
-    var type: LogType { get }
-}
+
