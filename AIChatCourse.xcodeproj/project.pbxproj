@@ -17,6 +17,7 @@
 		EBA9E7F42F50FA7B00AFE3C7 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = EBA9E7F32F50FA7B00AFE3C7 /* FirebaseStorage */; };
 		EBE941682F64C0BB00648BF9 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */; };
 		EBE9416F2F65893F00648BF9 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = EBE9416E2F65893F00648BF9 /* Mixpanel */; };
+		EBE941712F659CA700648BF9 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = EBE941702F659CA700648BF9 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 				EB9364802F4E558D00AC3EC2 /* SwiftfulFirestore in Frameworks */,
 				EB96E9262F49FEA400F28D86 /* FirebaseAuth in Frameworks */,
 				EBA9E7E22F50B55600AFE3C7 /* OpenAI in Frameworks */,
+				EBE941712F659CA700648BF9 /* FirebaseCrashlytics in Frameworks */,
 				EBA9E7F42F50FA7B00AFE3C7 /* FirebaseStorage in Frameworks */,
 				EBE9416F2F65893F00648BF9 /* Mixpanel in Frameworks */,
 				EB93647D2F4E296B00AC3EC2 /* FirebaseFirestore in Frameworks */,
@@ -147,6 +149,7 @@
 				EB12772C2F3A4B79001B6E4E /* Frameworks */,
 				EB12772D2F3A4B79001B6E4E /* Resources */,
 				EB1277632F3A57BE001B6E4E /* Run Script */,
+				EBE941722F659DA600648BF9 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -167,6 +170,7 @@
 				EBA9E7F32F50FA7B00AFE3C7 /* FirebaseStorage */,
 				EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */,
 				EBE9416E2F65893F00648BF9 /* Mixpanel */,
+				EBE941702F659CA700648BF9 /* FirebaseCrashlytics */,
 			);
 			productName = AIChatCourse;
 			productReference = EB12772F2F3A4B79001B6E4E /* AIChatCourse.app */;
@@ -316,6 +320,29 @@
 			shellScript = "
 ";
 			showEnvVarsInLog = 0;
+		};
+		EBE941722F659DA600648BF9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  GOOGLE_SERVICE_INFO_PLIST=\"${PROJECT_DIR}/AIChatCourse/GoogleServicePLists/GoogleService-Info-Dev.plist\"\nelif [ \"${CONFIGURATION}\" == \"Mock\" ]; then\n  echo \"Skipping Crashlytics upload for Mock configuration.\"\n  exit 0  # Use `exit 0` if `return` does not work in your environment\nelif [ \"${CONFIGURATION}\" == \"Release\" ]; then\n  GOOGLE_SERVICE_INFO_PLIST=\"${PROJECT_DIR}/AIChatCourse/GoogleServicePLists/GoogleService-Info-Prod.plist\"\nelse\n  echo \"No matching build configuration found for GoogleService-Info.plist!\"\n  exit 1\nfi\n\n# Run the Crashlytics script with the selected plist file\n\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\" -gsp \"${GOOGLE_SERVICE_INFO_PLIST}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -487,6 +514,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIChatCourse/AIChatCourse.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"AIChatCourse/Preview Content\"";
 				DEVELOPMENT_TEAM = ZWN2ZLM4P5;
 				ENABLE_PREVIEWS = YES;
@@ -506,6 +534,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Mar-cin.AIChatCourse.dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -526,13 +555,14 @@
 				CODE_SIGN_ENTITLEMENTS = AIChatCourse/AIChatCourse.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"AIChatCourse/Preview Content\"";
 				DEVELOPMENT_TEAM = ZWN2ZLM4P5;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AIChatCourse/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat - Dev";
+				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -545,6 +575,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Mar-cin.AIChatCourse";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -702,13 +733,14 @@
 				CODE_SIGN_ENTITLEMENTS = AIChatCourse/AIChatCourse.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"AIChatCourse/Preview Content\"";
 				DEVELOPMENT_TEAM = ZWN2ZLM4P5;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AIChatCourse/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat - Dev";
+				INFOPLIST_KEY_CFBundleDisplayName = "AI Chat - Mock";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -721,6 +753,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Mar-cin.AIChatCourse.mock";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -923,6 +956,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EBE9416D2F65893F00648BF9 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
 			productName = Mixpanel;
+		};
+		EBE941702F659CA700648BF9 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB96E9242F49FEA400F28D86 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
