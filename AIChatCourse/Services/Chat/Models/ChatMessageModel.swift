@@ -52,6 +52,21 @@ struct ChatMessageModel: Identifiable, Codable, StringIdentifiable{
     }
     
     
+    var eventParameters: [String: Any] {
+        
+        var dict: [String: Any?] = [
+            "message_\(CodingKeys.id.rawValue)": id,
+            "message_\(CodingKeys.chatId.rawValue)": chatId,
+            "message_\(CodingKeys.authorId.rawValue)": authorId,
+            "message_\(CodingKeys.content.rawValue)": content,
+            "message_\(CodingKeys.seenByIds.rawValue)": seenByIds?.sorted().joined(separator: ", "),
+            "message_\(CodingKeys.dateCrated.rawValue)": dateCrated
+        ]
+        dict.merge(content?.eventParameters)
+        return dict.compactMapValues({ $0 })
+    }
+    
+    
     
     static func newUserMessage(chatId: String, userId: String, message: AIChatModel) -> Self {
         ChatMessageModel(
