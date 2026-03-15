@@ -29,11 +29,13 @@ struct DevSettingsView: View {
                 
                 
             }
+            
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     backButtonView
                 }
             }
+            .screenAppearAnalytics(name: "DevSettings")
         }
     }
     
