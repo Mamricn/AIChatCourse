@@ -10,6 +10,8 @@ import SwiftUI
 struct WelcomeView: View {
     
     @Environment(AppState.self) private var root
+    @Environment(LogManager.self) private var logManager
+
     
     @State  var imageName: String = Constants.randomImage
     @State private var showSignInView: Bool = false
@@ -30,6 +32,7 @@ struct WelcomeView: View {
             }
             
         }
+        .screenAppearAnalytics(name: "Welcome View")
         .sheet(isPresented: $showSignInView) {
             CreateAccountView(
                 title: "Sign In",
@@ -73,6 +76,8 @@ struct WelcomeView: View {
     
     
     private func handleDidSignIn(isNewUser: Bool){
+        logManager.trackEvent(event: Event.didSignIn(isNewUser: isNewUser))
+        
         if isNewUser {
             // do noting, user goes through onboarding
             
@@ -89,6 +94,7 @@ struct WelcomeView: View {
     
     private func onSignInPressed(){
         showSignInView = true
+        logManager.trackEvent(event: Event.SignInPressed)
     }
     
     
@@ -105,6 +111,45 @@ struct WelcomeView: View {
                 Link("Privacy Policy", destination: privacyPolicy)
             }
             
+        }
+    }
+    
+    enum Event: LoggableEvent {
+
+        
+        case didSignIn(isNewUser: Bool)
+        case SignInPressed
+        
+        var eventName: String{
+            switch self {
+                
+            case .didSignIn:        return "WelcomView_didSignIn"
+            case .SignInPressed:    return "WelcomView_SignInPressed"
+        
+            }
+        }
+        
+        var parameters: [String : Any]? {
+            switch self {
+            case .didSignIn(let isNewUser):
+                return [
+                    "is_new_user": isNewUser
+                ]
+                
+                
+            default:
+                return nil
+                
+            }
+        }
+        
+        var type: LogType {
+            switch self {
+                
+                
+            default:
+                return .analytic
+            }
         }
     }
     

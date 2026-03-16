@@ -12,6 +12,8 @@ import SwiftUI
 struct ExploreView: View {
     
     @Environment(AvatarManager.self) private var avatarManager
+    @Environment(LogManager.self) private var logManager
+
    
     @State private var categories: [CharacterOption] = CharacterOption.allCases
     
@@ -75,6 +77,7 @@ struct ExploreView: View {
                             
                     }
                 }
+                .screenAppearAnalytics(name: "ExploreView")
                 .sheet(isPresented: $showDevSettings, content: {
                     DevSettingsView()
                 })
@@ -96,8 +99,92 @@ struct ExploreView: View {
             }
     }
     
+    enum Event: LoggableEvent {
+        
+        case devSettingsPressed
+        case tryAgainStart
+        case tryAgainSuccess
+        case tryAgainFail(error: Error)
+        
+        case loadFeatureAvatarsStart
+        case loadFeatureAvatarsSuccess(count: Int)
+        case loadFeatureAvatarsFail(error: Error)
+        
+        case loadPopularAvatarsStart
+        case loadPopularAvatarsSuccess(count: Int)
+        case loadPopularAvatarsFail(error: Error)
+        
+        case onAvatarPressed(avatar: AvatarModel)
+        case onCategoryPressed(category: CharacterOption)
+        
+        
+        
+
+        
+        
+        var eventName: String{
+            
+            switch self {
+            case .devSettingsPressed:                 return "EploreView_devSettings_Pressed"
+            case .tryAgainStart:                      return "EploreView_tryAgain_Start"
+            case .tryAgainSuccess:                    return "EploreView_tryAgain_Succcess"
+            case .tryAgainFail:                       return "EploreView_tryAgain_Fail"
+            
+            case .loadFeatureAvatarsStart :           return "EploreView_tryAgain_Start"
+            case .loadFeatureAvatarsSuccess:          return "EploreView_tryAgain_Success"
+            case .loadFeatureAvatarsFail:             return "EploreView_tryAgain_Fail"
+        
+            case .loadPopularAvatarsStart:            return "EploreView_tryAgain_Start"
+            case .loadPopularAvatarsSuccess:          return "EploreView_tryAgain_Success"
+            case .loadPopularAvatarsFail:             return "EploreView_tryAgain_Fail"
+                
+            case .onAvatarPressed:                    return "EploreView_onAvatar_Pressed"
+            case .onCategoryPressed:                  return "EploreView_onCategory_Pressed"
+            
+            }
+        }
+        
+        var parameters: [String : Any]? {
+            
+            
+            switch self {
+            case .loadFeatureAvatarsSuccess(count: let count), .loadPopularAvatarsSuccess(count: let count):
+                return [
+                    "avatars_count": count
+                ]
+            case .loadPopularAvatarsFail(error: let error):
+                return error.eventParameters
+            case .onAvatarPressed(avatar: let avatar):
+                return avatar.eventParameters
+            case .onCategoryPressed(category: let category):
+                return [
+                    "category" : category.rawValue
+                ]
+                
+            
+            default:
+                return nil
+                
+            }
+        }
+        
+        var type: LogType {
+            switch self {
+            case .loadFeatureAvatarsFail, .loadPopularAvatarsFail:
+                return .severe
+            default:
+                return .analytic
+            }
+        }
+    }
+    
+    
+    
+    
     private func onDevSettingsPressed() {
         showDevSettings = true
+        logManager.trackEvent(event: Event.devSettingsPressed)
+
     }
     
     
@@ -127,8 +214,11 @@ struct ExploreView: View {
     }
     
     private func onTryAgainPressed(){
+
         isLoadingPopular = true
         isLoadingFeatured = true
+        logManager.trackEvent(event: Event.tryAgainStart)
+
         Task {
             try await Task.sleep(nanoseconds: 233344443)
             await loadFeatureAvatars()
@@ -141,14 +231,20 @@ struct ExploreView: View {
     
     
     private func loadFeatureAvatars() async {
-        
+
         guard featureAvatars.isEmpty else { return }
+        logManager.trackEvent(event: Event.loadFeatureAvatarsStart)
+
+        
         
         do {
             featureAvatars =  try await avatarManager.getFeaturedAvatars()
+            logManager.trackEvent(event: Event.loadFeatureAvatarsSuccess(count: featureAvatars.count))
+
 
         } catch {
-            print("error loading feature avatars \(error)")
+            logManager.trackEvent(event: Event.loadFeatureAvatarsFail(error: error))
+
         }
         isLoadingFeatured = false
     }
@@ -157,11 +253,13 @@ struct ExploreView: View {
     private func loadPopularAvatars() async {
         
         guard popularAvatars.isEmpty else { return }
-        
+        logManager.trackEvent(event: Event.loadPopularAvatarsStart)
+
         do {
             popularAvatars =  try await avatarManager.getPopularAvatars()
+            logManager.trackEvent(event: Event.loadPopularAvatarsSuccess(count: popularAvatars.count))
         } catch {
-            print("error loading popular avatars \(error)")
+            logManager.trackEvent(event: Event.loadPopularAvatarsFail(error: error))
         }
         isLoadingPopular = false
     }

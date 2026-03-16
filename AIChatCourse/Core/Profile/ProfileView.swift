@@ -12,6 +12,7 @@ struct ProfileView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(UserManager.self) private var userManager
     @Environment(AvatarManager.self) private var avatarManager
+    @Environment(LogManager.self) private var logManager
 
     
     @State private var showCreateAvatarView: Bool = false
@@ -44,6 +45,7 @@ struct ProfileView: View {
                 }
             }
         }
+        .screenAppearAnalytics(name: "ProfileView")
         .sheet(isPresented: $showSettingsView) {
             SettingsView()
         }
@@ -68,13 +70,17 @@ struct ProfileView: View {
     
     private func loadData() async {
         self.currentUser =  userManager.currentUser
+        logManager.trackEvent(event: Event.loadAvatarStart)
         
         do {
             let uid = try authManager.getAuthId()
             myAvatars = try await avatarManager.getAvatarsForAuthor(userId: uid)
+            logManager.trackEvent(event: Event.loadAvatarSuccess(count: myAvatars.count))
+
+            
             
         } catch {
-            print("Failed to fetch user avatars.")
+            logManager.trackEvent(event: Event.loadAvatarFail(error: error))
         }
         
         isLoading = false
@@ -168,18 +174,25 @@ struct ProfileView: View {
     
     private func onNewAvatarButtonPressed(){
         showCreateAvatarView = true
+        logManager.trackEvent(event: Event.newAvatarPressed)
     }
     
     private func onDeleteAvatar(indexSet: IndexSet){
         guard let index = indexSet.first else { return }
         
         let avatar = myAvatars[index]
+        logManager.trackEvent(event: Event.deleteAvatarStart(avatar: avatar))
+        
+        
         
         Task {
             do {
                 try await avatarManager.removeAuthorIdFromAvatar(avatarId: avatar.id)
+                logManager.trackEvent(event: Event.deleteAvatarSuccess(avatar: avatar))
             } catch {
                 showAlert = AnyAppAlert(title: "Unable to delete avatar.", subtitle: "Please try again")
+                logManager.trackEvent(event: Event.deleteAvatar(error: error))
+
             }
         }
         
@@ -190,7 +203,70 @@ struct ProfileView: View {
     
     private func onAvatarPressed(avatar: AvatarModel){
         path.append(.chat(avatarId: avatar.avatarId, chat: nil))
+        logManager.trackEvent(event: Event.avatarPressed(avatar: avatar))
+
+        //press
     }
+    
+    
+    enum Event: LoggableEvent {
+        
+        case loadAvatarStart
+        case loadAvatarSuccess(count: Int)
+        case loadAvatarFail(error: Error)
+        case settingsPressed
+        case newAvatarPressed
+        case avatarPressed(avatar: AvatarModel)
+        case deleteAvatarStart(avatar: AvatarModel)
+        case deleteAvatarSuccess(avatar: AvatarModel)
+        case deleteAvatar(error: Error)
+
+        
+        
+        var eventName: String{
+            
+            switch self {
+            case .loadAvatarStart:                  return  "ProfileView_loadAvatar_Start"
+            case .loadAvatarSuccess:                return  "ProfileView_loadAvatar_Success"
+            case .loadAvatarFail:                   return  "ProfileView_loadAvatar_Fail"
+            case .settingsPressed:                  return  "ProfileView_settings_Pressed"
+            case .newAvatarPressed:                 return  "ProfileView_newAvatar_Pressed"
+            case .avatarPressed:                    return  "ProfileView_avatar_Pressed"
+            case .deleteAvatarStart:                return  "ProfileView_deleteAvatar_Start"
+            case .deleteAvatarSuccess:              return  "ProfileView_deleteAvatar_Success"
+            case .deleteAvatar:                     return  "ProfileView_deleteAvatar_Error"
+            }
+        }
+        
+        var parameters: [String : Any]? {
+            switch self {
+        case .loadAvatarFail(let error), .deleteAvatar(let error):
+            return error.eventParameters
+        case .loadAvatarSuccess(let count):
+            return [
+                "avatar_count": count
+            ]
+        case .avatarPressed(avatar: let avatar), .deleteAvatarStart(avatar: let avatar), .deleteAvatarSuccess(avatar: let avatar):
+            return avatar.eventParameters
+            
+            default:
+                return nil
+                
+            }
+        }
+        
+        var type: LogType {
+            switch self {
+            case .loadAvatarFail, .deleteAvatar:
+                return .severe
+            default:
+                return .analytic
+            }
+        }
+    }
+    
+    
+    
 }
 
 

@@ -16,6 +16,7 @@ struct SettingsView: View {
     @Environment(UserManager.self) private var userManager
     @Environment(AvatarManager.self) private var avatarManager
     @Environment(ChatManager.self) private var chatManager
+    @Environment(LogManager.self) private var logManager
     @Environment(\.dismiss) private var dismiss
     
     
@@ -28,15 +29,11 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack{
             List{
-                
-                
-                
                 accountSection
                 
                 purchaseSection
             
                 applicationSection
-
                
             }
             .navigationTitle("Settings")
@@ -50,6 +47,7 @@ struct SettingsView: View {
                 setAnonymousAccountStatus()
             }
             .showCustomAlert(alert: $showAlert)
+            .screenAppearAnalytics(name: "SettingsView")
         }
     }
    
@@ -170,17 +168,24 @@ struct SettingsView: View {
     
     func onSignOutPressed() {
         // do some logic to sign user out of app
-        
+        // start
+        logManager.trackEvent(event: Event.signOutStart)
         Task {
             do {
                 try authManager.signOut()
                  userManager.signOut()
+                logManager.trackEvent(event: Event.signOutSuccess)
+
+                
                await dismissScreen()
             } catch let error  {
                 showAlert = AnyAppAlert(error: error)
+                logManager.trackEvent(event: Event.signOutFail(error: error))
             }
         }
     }
+    
+    
     
     private func dismissScreen() async {
         dismiss()
@@ -203,7 +208,13 @@ struct SettingsView: View {
         )
     }
     
+    
+    
+    
+    
     private func onDeleteAccountConfirmed() {
+        
+        logManager.trackEvent(event: Event.deletedAccountStartConfimed)
         Task {
             do {
                 let uid =  try authManager.getAuthId()
@@ -216,18 +227,71 @@ struct SettingsView: View {
                 async let deleteChats: () = chatManager.deleteAllChatsForUser(userId: uid)
                 
                 
+                
                 let (_,_,_,_) = await (try deleteAuth, try deleteUser, try deleteAvatar, try deleteChats)
-                
-                
+                logManager.trackEvent(event: Event.deletedAccountSuccess)
+                logManager.deleteUserProfile()
                await dismissScreen()
             } catch let error  {
                 showAlert = AnyAppAlert(error: error)
+                logManager.trackEvent(event: Event.deletedAccountConfirmedFail(error: error))
+
+                //error
             }
         }
     }
     
     func onCreateAccountPressed() {
         showCreatAccountView = true
+        logManager.trackEvent(event: Event.createAccountPressed)
+
+        //pressed
+    }
+    
+    
+    
+    enum Event: LoggableEvent {
+        
+        case signOutStart
+        case signOutSuccess
+        case signOutFail(error: Error)
+        case deletedAccountStartConfimed
+        case deletedAccountSuccess
+        case deletedAccountConfirmedFail(error: Error)
+        case createAccountPressed
+
+        
+        var eventName: String{
+            switch self {
+            
+            case .signOutStart:                     return "SettingsView_signOut_Start"
+            case .signOutSuccess:                   return "SettingsView_signOut_Success"
+            case .signOutFail:                      return "SettingsView_signOut_Fail"
+            case .deletedAccountStartConfimed:      return "SettingsView_deletedAccount_Start"
+            case .deletedAccountSuccess:            return "SettingsView_deletedAccount_Success"
+            case .deletedAccountConfirmedFail:      return "SettingsView_deletedAccount_Fail"
+            case .createAccountPressed:             return "SettingsView_createAccount_Pressed"
+            }
+        }
+        
+        var parameters: [String : Any]? {
+            switch self {
+            case .signOutFail(let error), .deletedAccountConfirmedFail(let error):
+                return error.eventParameters
+            default:
+                return nil
+                
+            }
+        }
+        
+        var type: LogType {
+            switch self {
+                case .signOutFail, .deletedAccountConfirmedFail:
+                return .severe
+            default:
+                return .analytic
+            }
+        }
     }
     
     
