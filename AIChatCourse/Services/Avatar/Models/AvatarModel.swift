@@ -76,10 +76,9 @@ struct AvatarModel: Hashable, Codable, StringIdentifiable {
         let dict: [String: Any?] = [
             "avatar_\(CodingKeys.avatarId.rawValue)": avatarId,
             "avatar_\(CodingKeys.name.rawValue)": name,
-            "avatar_\(CodingKeys.characterOption.rawValue)": characterOption,
-            "avatar_\(CodingKeys.characterAction.rawValue)": characterAction,
-            "avatar_\(CodingKeys.characterLocation.rawValue)": characterLocation,
-            "avatar_\(CodingKeys.profileImageName.rawValue)": profileImageName,
+            "avatar_\(CodingKeys.characterOption.rawValue)": characterOption?.rawValue,
+            "avatar_\(CodingKeys.characterAction.rawValue)": characterAction?.rawValue,
+            "avatar_\(CodingKeys.characterLocation.rawValue)": characterLocation?.rawValue,
             "avatar_\(CodingKeys.profileImageName.rawValue)": profileImageName,
             "avatar_\(CodingKeys.authId.rawValue)": authId,
             "avatar_\(CodingKeys.dateCreated.rawValue)": dateCreated,
