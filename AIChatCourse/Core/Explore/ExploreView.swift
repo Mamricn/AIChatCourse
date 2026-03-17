@@ -106,10 +106,34 @@ struct ExploreView: View {
                 .onFirstAppear {
                     schedulePushNotifcation()
                 }
+                .onOpenURL { url in
+                    handleDeepLink(url: url)
+                }
         }
     }
     
-    
+    private func handleDeepLink(url: URL) {
+        logManager.trackEvent(event: Event.deeplinkStart)
+
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false), let queryItems = components.queryItems else {
+            // no query items
+            logManager.trackEvent(event: Event.deeplinkNoQueryItems)
+
+            return
+        }
+        for queryItem in queryItems {
+            if queryItem.name == "category", let value = queryItem.value, let category = CharacterOption(rawValue: value) {
+                let imageName = popularAvatars.first(where: {$0.characterOption == category })?.profileImageName ?? Constants.randomImage
+                path.append(.category(category: category, imageName: imageName))
+                logManager.trackEvent(event: Event.deeplinkCategory(category: category))
+                return
+                
+            }
+        }
+        logManager.trackEvent(event: Event.deeplinkUnknown)
+
+        
+    }
     
     
     private func schedulePushNotifcation() {
@@ -197,6 +221,11 @@ struct ExploreView: View {
         case pushNotifsPressStart
         case pushNotifsPressEnable(isAuthorized: Bool)
         case pushNotifsPressCancel
+        
+        case deeplinkStart
+        case deeplinkNoQueryItems
+        case deeplinkCategory(category: CharacterOption)
+        case deeplinkUnknown
 
         
         
@@ -222,9 +251,14 @@ struct ExploreView: View {
             case .onAvatarPressed:                    return "EploreView_onAvatar_Pressed"
             case .onCategoryPressed:                  return "EploreView_onCategory_Pressed"
                 
-            case .pushNotifsPressStart:                return "EploreView_pushNotifsPress_Start"
-            case .pushNotifsPressEnable:               return "EploreView_pushNotifsPress_Enable"
-            case .pushNotifsPressCancel:                return "EploreView_pushNotifs_Press_Cancel"
+            case .pushNotifsPressStart:               return "EploreView_pushNotifsPress_Start"
+            case .pushNotifsPressEnable:              return "EploreView_pushNotifsPress_Enable"
+            case .pushNotifsPressCancel:              return "EploreView_pushNotifs_Press_Cancel"
+            case .deeplinkStart:                      return "EploreView_deeplink_Start"
+            case .deeplinkNoQueryItems:               return "EploreView_deeplink_NoQueryItems"
+            case .deeplinkCategory:                   return "EploreView_deeplink_Category"
+            case .deeplinkUnknown:                    return "EploreView_deeplink_Unknown"
+
             
             }
         }
@@ -233,7 +267,6 @@ struct ExploreView: View {
             
             
             switch self {
-                
                 
             case .pushNotifsPressEnable(isAuthorized: let isAuthorized ):
                 return [
@@ -247,7 +280,7 @@ struct ExploreView: View {
                 return error.eventParameters
             case .onAvatarPressed(avatar: let avatar):
                 return avatar.eventParameters
-            case .onCategoryPressed(category: let category):
+            case .onCategoryPressed(category: let category), .deeplinkCategory(category: let category):
                 return [
                     "category" : category.rawValue
                 ]
@@ -261,7 +294,7 @@ struct ExploreView: View {
         
         var type: LogType {
             switch self {
-            case .loadFeatureAvatarsFail, .loadPopularAvatarsFail:
+            case .loadFeatureAvatarsFail, .loadPopularAvatarsFail, .deeplinkUnknown:
                 return .severe
             default:
                 return .analytic
