@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftfulUtilities
 
 
 
@@ -24,6 +25,7 @@ struct SettingsView: View {
     @State private var isAnynomusUser: Bool = false
     @State private var showCreatAccountView: Bool = false
     @State private var showAlert: AnyAppAlert?
+    @State private var showRatingModal: Bool = false
     
     
     var body: some View {
@@ -48,9 +50,27 @@ struct SettingsView: View {
             }
             .showCustomAlert(alert: $showAlert)
             .screenAppearAnalytics(name: "SettingsView")
+            .showModel(showModal: $showRatingModal) {
+                ratingModal
+                
+            }
         }
     }
    
+    private var ratingModal: some View {
+        CustomModalView(
+            title: "Are you enjoying AIChat?",
+            subtitle: "We'd love to hear your feedback!",
+            primaryButtonTitle: "Yes",
+            primaryButtonAction: {
+                onEnjoyingAppYesPressed()
+            },
+            secondaryButtonTitle: "No") {
+                onEnjoyingAppNoPressed()
+            }
+    }
+    
+    
     
     
     
@@ -118,6 +138,15 @@ struct SettingsView: View {
     
     private var applicationSection: some View {
         Section {
+            Text("Rate us on the App Store")
+                .foregroundStyle(.blue)
+                .rowFormatting()
+                .anyButton(.highlight) {
+                    onRatingsButtonPressed()
+                }
+                .removeListRowFormating()
+            
+            
             HStack(spacing: 8){
                 Text("Version")
                 Spacer(minLength: 0)
@@ -144,7 +173,7 @@ struct SettingsView: View {
                 .foregroundStyle(.blue)
                 .rowFormatting()
                 .anyButton(.highlight) {
-                    
+                    onContactUsPressed()
                 }
                 .removeListRowFormating()
             
@@ -157,11 +186,39 @@ struct SettingsView: View {
         }
     }
     
+    private func onRatingsButtonPressed(){
+        logManager.trackEvent(event: Event.ratingsPressed)
+        showRatingModal = true
+    }
+    
+    
+    private func onEnjoyingAppYesPressed() {
+        logManager.trackEvent(event: Event.ratingYes)
+        showRatingModal = false
+        AppStoreRatingsHelper.requestRatingsReview()
+    }
+    private func onEnjoyingAppNoPressed() {
+        logManager.trackEvent(event: Event.ratingNo)
+        showRatingModal = false
+       
+    }
+    
+    
     
     
     
     func setAnonymousAccountStatus(){
         isAnynomusUser = authManager.auth?.isAnonymous == true
+    }
+    
+    private func onContactUsPressed() {
+        logManager.trackEvent(event: Event.contactUsPressed)
+        let email = "support@swiftfulthinking.com"
+        let emailString = "mailto:\(email)"
+        guard let url = URL(string: emailString), UIApplication.shared.canOpenURL(url) else { return }
+        UIApplication.shared.open(url)
+        
+        
     }
     
     
@@ -250,6 +307,9 @@ struct SettingsView: View {
     
     
     
+    
+    
+    
     enum Event: LoggableEvent {
         
         case signOutStart
@@ -259,6 +319,10 @@ struct SettingsView: View {
         case deletedAccountSuccess
         case deletedAccountConfirmedFail(error: Error)
         case createAccountPressed
+        case contactUsPressed
+        case ratingsPressed
+        case ratingYes
+        case ratingNo
 
         
         var eventName: String{
@@ -271,6 +335,10 @@ struct SettingsView: View {
             case .deletedAccountSuccess:            return "SettingsView_deletedAccount_Success"
             case .deletedAccountConfirmedFail:      return "SettingsView_deletedAccount_Fail"
             case .createAccountPressed:             return "SettingsView_createAccount_Pressed"
+            case .contactUsPressed:                 return "SettingsView_contactUs_Pressed"
+            case .ratingsPressed:                   return "SettingsView_ratings_Pressed"
+            case .ratingYes:                        return "SettingsView_ratings_Yes"
+            case .ratingNo:                        return "SettingsView_ratings_No"
             }
         }
         
