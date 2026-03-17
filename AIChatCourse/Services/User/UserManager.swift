@@ -28,8 +28,8 @@ class UserManager {
     init(services: UserServices, logManager: LogManager? = nil) {
         self.remote = services.remote
         self.local = services.local
-        self.currentUser = local.getCurrentUser()
         self.logManager = logManager
+        self.currentUser = local.getCurrentUser()
         
 
     }
@@ -40,6 +40,8 @@ class UserManager {
         
         if isNewUser{
             let user = UserModel(auth: auth, creationVersion: Utilities.appVersion )
+            self.currentUser = user
+            saveCurrentUserLocally()
             logManager?.trackEvent(event: Event.logInStart(user: user))
             
             try await remote.saveUser(user: user)

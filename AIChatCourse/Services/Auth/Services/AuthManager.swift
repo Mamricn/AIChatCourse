@@ -71,6 +71,8 @@ class AuthManager {
     }
     func deleteAccount() async throws{
         logManager?.trackEvent(event: Event.deleteAccountStart)
+        
+        // I dont have apple account so i cant create account. therefore i cant delete account which dosent exist 
 
         try await service.deleteAccount()
         auth = nil

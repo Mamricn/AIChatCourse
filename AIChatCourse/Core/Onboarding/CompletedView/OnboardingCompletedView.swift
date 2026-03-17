@@ -98,11 +98,11 @@ struct OnboardingCompletedView: View {
                 try await userManager.markOnboardingCompletedForCurrentUser(profileColorHex: hex)
                 logManager.trackEvent(event: Event.FinishSuccess(hex: hex))
 
-                
                 isCompletingProfileSetup = false
                 root.updateViewState(showTabBarView: true)
                 
             } catch {
+                print("❌ Onboarding completion failed:", error)
                 showAlert = AnyAppAlert(error: error)
                 logManager.trackEvent(event: Event.FinishFail(error: error))
 

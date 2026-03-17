@@ -13,8 +13,7 @@ struct MixPanelService: LogService {
     private var instance: MixpanelInstance {
         Mixpanel.mainInstance()
     }
-    
-    
+
     init(token: String, loggingEnabled: Bool = false){
         Mixpanel.initialize(token: token, trackAutomaticEvents: true)
         instance.loggingEnabled = loggingEnabled

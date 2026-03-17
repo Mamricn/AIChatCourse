@@ -10,6 +10,6 @@
 
 
 struct Keys {
-    static let mixPanelToken: String = "202824281aad6cd149e88d10177ed777"
+    static let mixPanelToken: String = "116f2b64e76337eaadf4540fae35f4eb"
 
 }

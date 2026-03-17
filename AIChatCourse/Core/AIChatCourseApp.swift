@@ -121,11 +121,11 @@ struct Dependencies {
                 FirebaseCrashlyticsService()
                 
             ])
-            authManager = AuthManager(service: MockAuthService(), logManager: logManager)
-            userManager = UserManager(services: MockUserServices(), logManager: logManager)
-            aiManager = AIManager(service: MockAIService())
-            avatarManager = AvatarManager(service: MockAvatarService(), local: MockLocalAvatarPersistence())
-            chatManager = ChatManager(service: MockChatService())
+            authManager = AuthManager(service: FirebaseAuthService(), logManager: logManager)
+            userManager = UserManager(services: ProductionUserServices(), logManager: logManager)
+            aiManager = AIManager(service: OpenAIService())
+            avatarManager = AvatarManager(service: FirebaseAvatarService(), local: SwiftDataLocalAvatar())
+            chatManager = ChatManager(service: FirebaseChatService())
            
         case .prod:
             logManager = LogManager(services: [
