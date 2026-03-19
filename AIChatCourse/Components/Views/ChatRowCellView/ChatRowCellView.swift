@@ -44,8 +44,8 @@ struct ChatRowCellView: View {
                     Text(subheadline)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.3)
+                        .lineLimit(1)
+                        .minimumScaleFactor(1)
                         
                 }
             }
@@ -63,7 +63,8 @@ struct ChatRowCellView: View {
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 8)
-        .background(colorScheme.backgroundPrimary)
+        .background(colorScheme.backgroundPrimary
+        )
        
         
     }
