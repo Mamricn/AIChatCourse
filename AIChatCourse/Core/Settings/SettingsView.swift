@@ -38,6 +38,8 @@ struct SettingsView: View {
                 applicationSection
                
             }
+            .lineLimit(1)
+            .minimumScaleFactor(0.4)
             .navigationTitle("Settings")
             .sheet(isPresented: $showCreatAccountView, onDismiss: {
                 setAnonymousAccountStatus()
@@ -117,6 +119,8 @@ struct SettingsView: View {
         Section {
             HStack(spacing: 8){
                 Text("Account status: \(isPremium ? "PREMIUM" : "FREE")")
+                
+                
                 Spacer(minLength: 0)
                 if isPremium{
                     Text("MANAGE")
@@ -365,16 +369,22 @@ struct SettingsView: View {
     
 }
 
-
+fileprivate struct RowFormattingViewModifier : ViewModifier {
+    
+    @Environment(\.colorScheme) var colorScheme
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(colorScheme.backgroundPrimary)
+    }
+}
 
 fileprivate extension View {
     
     func rowFormatting() -> some View {
-        self
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
-            .background(Color(uiColor: .systemBackground))
+        modifier(RowFormattingViewModifier())
         
     }
 }

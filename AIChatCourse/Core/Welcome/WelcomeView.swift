@@ -50,9 +50,14 @@ struct WelcomeView: View {
             Text("AI CHAT 🤙")
                 .font(.largeTitle)
                 .fontWeight(.semibold)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
             Text("YouTube @ SwiftfulThinking")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+            
         }
     }
     private var ctaButton: some View {
@@ -62,7 +67,11 @@ struct WelcomeView: View {
             } label: {
                 Text("Get started")
                     .callToActionButton()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
             }
+            .frame(maxWidth: 500)
+            
             Text("Already have an account? Sign in!")
                 .underline()
                 .font(.body)
@@ -71,6 +80,8 @@ struct WelcomeView: View {
                 .onTapGesture {
                     onSignInPressed()
                 }
+                .lineLimit(2)
+                .minimumScaleFactor(0.3)
         }
     }
     
@@ -103,12 +114,16 @@ struct WelcomeView: View {
         HStack(spacing: 8){
             if let termsOfService {
                 Link("Terms of service", destination: termsOfService)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
             }
             Circle()
                 .fill(.accent)
                 .frame(width: 4, height: 4)
             if let privacyPolicy {
                 Link("Privacy Policy", destination: privacyPolicy)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
             }
             
         }
@@ -157,5 +172,5 @@ struct WelcomeView: View {
 
 #Preview {
     WelcomeView()
-        .environment(AppState())
+        .previewEnvironment()
 }

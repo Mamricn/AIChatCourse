@@ -9,6 +9,9 @@ import SwiftUI
 
 struct CustomListCellView: View {
     
+    @Environment(\.colorScheme) private var colorScheme
+    
+    
     var title: String? = "Alpha"
     var subtitle: String? = "An alien that is smiling in the park."
     var imageName: String? = Constants.randomImage
@@ -42,9 +45,12 @@ struct CustomListCellView: View {
         }
         .padding(12)
         .padding(.vertical, 4)
-        .background(Color(uiColor: .systemBackground))
+        .background(colorScheme.backgroundPrimary)
     }
 }
+
+
+
 
 #Preview {
     ZStack{

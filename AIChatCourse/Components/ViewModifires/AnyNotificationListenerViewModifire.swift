@@ -24,7 +24,7 @@ struct AnyNotificationListenerViewModifire: ViewModifier {
     }
 }
 extension View {
-    func onNotficationRecieved(name: Notification.Name, action: @MainActor @escaping(Notification) -> Void) -> some View {
+    func onNotificationReceived(name: Notification.Name, action: @MainActor @escaping(Notification) -> Void) -> some View {
         modifier(AnyNotificationListenerViewModifire(notificationName: name, onNotificationRecipe: action))
     }
 }

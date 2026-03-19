@@ -28,8 +28,12 @@ struct CreateAccountView: View {
                 Text(title)
                     .font(.largeTitle)
                     .fontWeight(.semibold)
-                Text("Don't lose your data! Connect to an SSO provider to save your account.")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                Text(subtitle)
                     .font(.body)
+                    .lineLimit(4)
+                    .minimumScaleFactor(0.5)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -38,10 +42,12 @@ struct CreateAccountView: View {
                 style: .black,
                 cornerRadius: 10
             )
-                .frame(height: 50)
+                .frame(height: 55)
+                .frame(maxWidth: 400)
                 .anyButton(.press) {
                     onSignInApplePressed()
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
         }
@@ -118,4 +124,7 @@ struct CreateAccountView: View {
 
 #Preview {
     CreateAccountView()
+        .previewEnvironment()
+        .frame(maxHeight: 400)
+        .frame(maxHeight: .infinity, alignment: .bottom)
 }
