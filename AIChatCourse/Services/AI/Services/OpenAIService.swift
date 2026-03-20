@@ -9,6 +9,7 @@
 
 import OpenAI
 import SwiftUI
+import FirebaseFunctions
 
 
 
@@ -45,29 +46,34 @@ struct OpenAIService: AIService {
     
     func generateText(chats: [AIChatModel]) async throws -> AIChatModel {
         
-        let messages = chats.compactMap({$0.toOpenAIModel()})
         
-        for message in messages {
-            print(message)
+        let messages = chats.compactMap { chat in
+            
+            let role = chat.role.rawValue
+            let content = chat.message
+            return [
+                "role": role,
+                "content": content
+            ]
         }
         
-        
-        let query = ChatQuery( messages: messages, model: .gpt3_5Turbo )
-        
-        
-        let result = try await openAI.chats(query: query)
+        let response = try await Functions.functions().httpsCallable("generateOpenAIText").call([
+            "messages": messages
+        ])
+        print("got reponse")
+        print(response)
+        print(response.data)
         
         guard
-            let chat = result.choices.first?.message,
-            let model = AIChatModel(chat: chat)
-        
-        else {
+            let dict =  response.data as? [String: Any],
+            let roleString = dict ["role"] as? String,
+            let role = AIChatRole(rawValue: roleString),
+            let conent = dict ["content"] as? String else {
             throw OpenAIError.invalidResponse
         }
-        return model
+        return AIChatModel(role: role, content: conent)
+        
     }
-    
-    
     
     
     
