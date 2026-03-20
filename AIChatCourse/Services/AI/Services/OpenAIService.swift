@@ -7,7 +7,6 @@
 
 
 
-import OpenAI
 import SwiftUI
 import FirebaseFunctions
 
@@ -16,25 +15,15 @@ import FirebaseFunctions
 struct OpenAIService: AIService {
 
     
-    var openAI: OpenAI {
-        OpenAI(apiToken: "")
-    }
-    
     func generateImage(input: String) async throws -> UIImage {
-        let query = ImagesQuery(
-            prompt: input,
-            model: .chatgpt_4o_latest,
-            n: 1,
-            quality: .hd,
-            responseFormat: .b64_json,
-            size: ._512,
-            style: .natural,
-            user: nil
-        )
+        let response = try await Functions.functions().httpsCallable("generateOpenAIImage").call([
+            "input": input
+        ])
         
-        let result = try await openAI.images(query: query)
         
-        guard let b64Json = result.data.first?.b64Json,
+
+        
+        guard let b64Json = response.data as? String,
               let data = Data(base64Encoded: b64Json),
               let image = UIImage(data: data) else {
             throw OpenAIError.invalidResponse
@@ -104,60 +93,17 @@ struct AIChatModel: Codable {
         let dict: [String: Any?] = [
             "aichat_\(CodingKeys.role.rawValue)": role,
             "aichat_\(CodingKeys.message.rawValue)": message,
-
+            
             
         ]
         
         return dict.compactMapValues({ $0 })
     }
-    
-    
-    init?(chat: ChatResult.Choice.Message) {
-        self.role = AIChatRole(role: chat.role)
-        
-        guard let string = chat.content?.description else {
-            return nil
-        }
-        self.message = string
-    }
-    
-    func toOpenAIModel() -> ChatQuery.ChatCompletionMessageParam? {
-        ChatQuery.ChatCompletionMessageParam(role: .user, content: message)
-    }
 }
-
+    
+    
+    
+    
 enum AIChatRole: String, Codable {
-case user, system, assistant, tool, developer
-
-    init(role: String) {
-        switch role {
-        case "system":
-            self = .system
-        case "user":
-            self = .user
-        case "assistant":
-            self = .assistant
-        case "tool":
-            self = .tool
-        case "developer":
-            self = .developer
-        default:
-            self = .developer
-        }
+        case user, system, assistant, tool, developer
     }
-
-    var openAIRole: ChatQuery.ChatCompletionMessageParam.Role {
-        switch self {
-        case .user:
-            return .user
-        case .system:
-            return .system
-        case .assistant:
-            return .assistant
-        case .tool:
-            return .tool
-        case .developer:
-            return .developer
-        }
-    }
-}

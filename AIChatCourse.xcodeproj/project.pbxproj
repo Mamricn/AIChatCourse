@@ -14,7 +14,6 @@
 		EB967C992F3FD8FB005C8B36 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = EB967C982F3FD8FB005C8B36 /* SDWebImageSwiftUI */; };
 		EB96E9262F49FEA400F28D86 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EB96E9252F49FEA400F28D86 /* FirebaseAuth */; };
 		EB96E9312F4B2D5000F28D86 /* SignInAppleAsync in Frameworks */ = {isa = PBXBuildFile; productRef = EB96E9302F4B2D5000F28D86 /* SignInAppleAsync */; };
-		EBA9E7E22F50B55600AFE3C7 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = EBA9E7E12F50B55600AFE3C7 /* OpenAI */; };
 		EBA9E7F42F50FA7B00AFE3C7 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = EBA9E7F32F50FA7B00AFE3C7 /* FirebaseStorage */; };
 		EBE941682F64C0BB00648BF9 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */; };
 		EBE9416F2F65893F00648BF9 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = EBE9416E2F65893F00648BF9 /* Mixpanel */; };
@@ -85,7 +84,6 @@
 				EB9364802F4E558D00AC3EC2 /* SwiftfulFirestore in Frameworks */,
 				EB55F7192F6CAB3B0005128C /* FirebaseFunctions in Frameworks */,
 				EB96E9262F49FEA400F28D86 /* FirebaseAuth in Frameworks */,
-				EBA9E7E22F50B55600AFE3C7 /* OpenAI in Frameworks */,
 				EBE941712F659CA700648BF9 /* FirebaseCrashlytics in Frameworks */,
 				EBA9E7F42F50FA7B00AFE3C7 /* FirebaseStorage in Frameworks */,
 				EBE9416F2F65893F00648BF9 /* Mixpanel in Frameworks */,
@@ -168,7 +166,6 @@
 				EB96E9302F4B2D5000F28D86 /* SignInAppleAsync */,
 				EB93647C2F4E296B00AC3EC2 /* FirebaseFirestore */,
 				EB93647F2F4E558D00AC3EC2 /* SwiftfulFirestore */,
-				EBA9E7E12F50B55600AFE3C7 /* OpenAI */,
 				EBA9E7F32F50FA7B00AFE3C7 /* FirebaseStorage */,
 				EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */,
 				EBE9416E2F65893F00648BF9 /* Mixpanel */,
@@ -263,7 +260,6 @@
 				EB96E9242F49FEA400F28D86 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				EB96E92F2F4B2D4F00F28D86 /* XCRemoteSwiftPackageReference "SignInAppleAsync" */,
 				EB93647E2F4E558D00AC3EC2 /* XCRemoteSwiftPackageReference "SwiftfulFirestore" */,
-				EBA9E7E02F50B55600AFE3C7 /* XCRemoteSwiftPackageReference "OpenAI" */,
 				EBE9416D2F65893F00648BF9 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -894,14 +890,6 @@
 				minimumVersion = 1.0.2;
 			};
 		};
-		EBA9E7E02F50B55600AFE3C7 /* XCRemoteSwiftPackageReference "OpenAI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/MacPaw/OpenAI.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.4.7;
-			};
-		};
 		EBE9416D2F65893F00648BF9 /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mixpanel/mixpanel-swift.git";
@@ -947,11 +935,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EB96E92F2F4B2D4F00F28D86 /* XCRemoteSwiftPackageReference "SignInAppleAsync" */;
 			productName = SignInAppleAsync;
-		};
-		EBA9E7E12F50B55600AFE3C7 /* OpenAI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EBA9E7E02F50B55600AFE3C7 /* XCRemoteSwiftPackageReference "OpenAI" */;
-			productName = OpenAI;
 		};
 		EBA9E7F32F50FA7B00AFE3C7 /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;
