@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EB1548E32F44E96F00EAA55A /* SwiftfulUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = EB1548E22F44E96F00EAA55A /* SwiftfulUtilities */; };
+		EB55F7192F6CAB3B0005128C /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = EB55F7182F6CAB3B0005128C /* FirebaseFunctions */; };
 		EB93647D2F4E296B00AC3EC2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = EB93647C2F4E296B00AC3EC2 /* FirebaseFirestore */; };
 		EB9364802F4E558D00AC3EC2 /* SwiftfulFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = EB93647F2F4E558D00AC3EC2 /* SwiftfulFirestore */; };
 		EB967C992F3FD8FB005C8B36 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = EB967C982F3FD8FB005C8B36 /* SDWebImageSwiftUI */; };
@@ -82,6 +83,7 @@
 				EB96E9312F4B2D5000F28D86 /* SignInAppleAsync in Frameworks */,
 				EB967C992F3FD8FB005C8B36 /* SDWebImageSwiftUI in Frameworks */,
 				EB9364802F4E558D00AC3EC2 /* SwiftfulFirestore in Frameworks */,
+				EB55F7192F6CAB3B0005128C /* FirebaseFunctions in Frameworks */,
 				EB96E9262F49FEA400F28D86 /* FirebaseAuth in Frameworks */,
 				EBA9E7E22F50B55600AFE3C7 /* OpenAI in Frameworks */,
 				EBE941712F659CA700648BF9 /* FirebaseCrashlytics in Frameworks */,
@@ -171,6 +173,7 @@
 				EBE941672F64C0BB00648BF9 /* FirebaseAnalytics */,
 				EBE9416E2F65893F00648BF9 /* Mixpanel */,
 				EBE941702F659CA700648BF9 /* FirebaseCrashlytics */,
+				EB55F7182F6CAB3B0005128C /* FirebaseFunctions */,
 			);
 			productName = AIChatCourse;
 			productReference = EB12772F2F3A4B79001B6E4E /* AIChatCourse.app */;
@@ -914,6 +917,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EB1548E12F44E96F00EAA55A /* XCRemoteSwiftPackageReference "SwiftfulUtilities" */;
 			productName = SwiftfulUtilities;
+		};
+		EB55F7182F6CAB3B0005128C /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EB96E9242F49FEA400F28D86 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
 		};
 		EB93647C2F4E296B00AC3EC2 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
