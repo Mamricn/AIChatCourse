@@ -14,6 +14,8 @@ struct ExploreView: View {
     @Environment(AvatarManager.self) private var avatarManager
     @Environment(LogManager.self) private var logManager
     @Environment(PushManager.self) private var pushManager
+    @Environment(AuthManager.self) private var authManager
+    @Environment(ABTestManager.self) private var abTestManager
 
 
    
@@ -25,6 +27,7 @@ struct ExploreView: View {
     @State private var isLoadingPopular: Bool = true
     @State private var showNotificationButton: Bool = false
     @State private var showPushNotificationModal: Bool = false
+    @State private var showCreatAccountView: Bool = false
     
     
     
@@ -87,9 +90,15 @@ struct ExploreView: View {
                     }
                 }
                 .screenAppearAnalytics(name: "ExploreView")
+            
                 .sheet(isPresented: $showDevSettings, content: {
                     DevSettingsView()
                 })
+                .sheet(isPresented: $showCreatAccountView, content: {
+                    CreateAccountView()
+                        .presentationDetents([.medium])
+                })
+
                 .navigationDestinationForCoreModule(path: $path)
                 .showModel(showModal: $showPushNotificationModal, content: {
                     pushNotificationModal
@@ -105,10 +114,27 @@ struct ExploreView: View {
                 }
                 .onFirstAppear {
                     schedulePushNotifcation()
+                    showCreateAccountScreanIfNeeded()
                 }
                 .onOpenURL { url in
                     handleDeepLink(url: url)
                 }
+        }
+    }
+    
+    
+    private func showCreateAccountScreanIfNeeded(){
+        Task {
+            try await Task.sleep(for: .seconds(2))
+            // if user dosent have alreadt account and
+            
+            guard authManager.auth?.isAnonymous == true &&
+                    abTestManager.activeTest.createAccountTest == true else {
+                return
+            }
+            
+            
+            showCreatAccountView = true
         }
     }
     
@@ -496,13 +522,22 @@ struct ExploreView: View {
         .environment(AvatarManager(service: MockAvatarService(deley: 0)))
         .previewEnvironment()
 }
+#Preview("Has data w/ Create Acct Test"){
+    ExploreView()
+        .environment(AvatarManager(service: MockAvatarService(deley: 0)))
+        .environment(AuthManager(service: MockAuthService(user: .mock(isAnonymous: true))))
+        .environment(ABTestManager(service: MockABTestService(createAccountTest: true)))
+        .previewEnvironment()
+}
 #Preview("No data"){
     ExploreView()
         .environment(AvatarManager(service: MockAvatarService(avatars: [])))
+        .previewEnvironment()
 }
 
 #Preview("Slow loading"){
     ExploreView()
         .environment(AvatarManager(service: MockAvatarService(deley: 10)))
+        .previewEnvironment()
 }
 
