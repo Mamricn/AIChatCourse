@@ -14,15 +14,19 @@ struct DevSettingsView: View {
     
     @Environment(AuthManager.self) private var authManager
     @Environment(UserManager.self) private var userManager
+    @Environment(ABTestManager.self) private var abTestManager
 
     
     @Environment(\.dismiss) private var dismiss
+    
+    @State private var createAccountTest: Bool = false
+    
     
     var body: some View {
         NavigationStack {
             List {
                
-                
+                abTestSection
                 authSection
                 userSection
                 deviceSection
@@ -36,8 +40,17 @@ struct DevSettingsView: View {
                 }
             }
             .screenAppearAnalytics(name: "DevSettings")
+            .onFirstAppear {
+                loadABTest()
+            }
         }
     }
+    
+    private func loadABTest(){
+        createAccountTest = abTestManager.activeTest.createAccountTest
+    }
+    
+    
     
     private var backButtonView: some View {
         Image(systemName: "xmark")
@@ -52,6 +65,36 @@ struct DevSettingsView: View {
     private func onBackButtonPressed() {
         dismiss()
     }
+    
+    
+    private func handleCreatAccountChange(oldValue: Bool, newValue: Bool) {
+        if newValue != abTestManager.activeTest.createAccountTest {
+            do {
+                 var tests = abTestManager.activeTest
+                tests.update(createAccountTest: newValue)
+                try abTestManager.override(updatedTest: tests)
+            } catch {
+                createAccountTest = abTestManager.activeTest.createAccountTest 
+            }
+        }
+    }
+    
+    
+    private var abTestSection: some View {
+        Section {
+            
+            Toggle("Create Acc Test", isOn: $createAccountTest)
+                .onChange(of: createAccountTest, handleCreatAccountChange)
+           
+        } header: {
+            Text("AB Test")
+        }
+        .font(.caption)
+    }
+    
+    
+    
+    
     
     private var authSection: some View {
         Section {

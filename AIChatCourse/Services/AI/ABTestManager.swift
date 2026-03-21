@@ -11,7 +11,7 @@ import SwiftUI
 
 
 struct ActiveABTest: Codable {
-    let createAccountTest: Bool
+    private(set) var createAccountTest: Bool
     
     init(createAccountTest: Bool){
         self.createAccountTest = createAccountTest
@@ -29,6 +29,9 @@ struct ActiveABTest: Codable {
         ]
         return dict.compactMapValues({ $0 })
     }
+    mutating func update(createAccountTest newValue: Bool){
+        createAccountTest = newValue
+    }
 }
 
 
@@ -40,12 +43,14 @@ struct ActiveABTest: Codable {
 
 protocol ABTestService {
     var activeTest: ActiveABTest { get }
+    func saveUpdatedConfig(updatedTests: ActiveABTest) throws
+    
 }
 
 
-struct MockABTestService: ABTestService {
+class MockABTestService: ABTestService {
     
-    let activeTest: ActiveABTest
+    var activeTest: ActiveABTest
     
     init(createAccountTest: Bool? = nil){
         self.activeTest = ActiveABTest(
@@ -54,8 +59,33 @@ struct MockABTestService: ABTestService {
     }
     
     
+    func saveUpdatedConfig(updatedTests: ActiveABTest) throws {
+        activeTest = updatedTests
+    }
+
+    
+    
     
 }
+
+class LocalABTestSerivce: ABTestService {
+    @UserDefault(key: ActiveABTest.CodingKeys.createAccountTest.rawValue, startingValue: .random()) private var createAccountTest: Bool
+    
+    var activeTest: ActiveABTest {
+        ActiveABTest(
+            createAccountTest: createAccountTest
+        )
+    }
+    
+    func saveUpdatedConfig(updatedTests: ActiveABTest) throws {
+        createAccountTest = updatedTests.createAccountTest
+    }
+}
+
+
+
+
+
 
 @MainActor
 @Observable
@@ -76,7 +106,16 @@ class ABTestManager {
     
     
     private func configure() {
+        activeTest = service.activeTest
         logManager?.addUserPropeties(dict: activeTest.eventParameters, isHighPriority: false)
+    }
+    
+    
+    func override(updatedTest: ActiveABTest) throws {
+       try service.saveUpdatedConfig(updatedTests: updatedTest)
+        configure()
+        
+        
     }
     
 }

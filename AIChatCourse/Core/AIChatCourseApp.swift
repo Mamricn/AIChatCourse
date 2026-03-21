@@ -120,7 +120,7 @@ struct Dependencies {
           
         case .dev:
             logManager = LogManager(services: [
-                ConsoleService(printParameters: false),
+                ConsoleService(printParameters: true),
                 FirebaseAnalyticsService(),
                 MixPanelService(token: Keys.mixPanelToken),
                 FirebaseCrashlyticsService()
@@ -131,7 +131,7 @@ struct Dependencies {
             aiManager = AIManager(service: OpenAIService())
             avatarManager = AvatarManager(service: FirebaseAvatarService(), local: SwiftDataLocalAvatar())
             chatManager = ChatManager(service: FirebaseChatService())
-            abTestManager = ABTestManager(service: MockABTestService(), logManager: logManager)
+            abTestManager = ABTestManager(service: LocalABTestSerivce(), logManager: logManager)
 
            
         case .prod:
