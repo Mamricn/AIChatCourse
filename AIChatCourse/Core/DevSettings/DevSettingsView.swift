@@ -20,6 +20,8 @@ struct DevSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var createAccountTest: Bool = false
+    @State private var onBoardingCommunityTest: Bool = false
+
     
     
     var body: some View {
@@ -48,7 +50,9 @@ struct DevSettingsView: View {
     
     private func loadABTest(){
         createAccountTest = abTestManager.activeTest.createAccountTest
+        onBoardingCommunityTest = abTestManager.activeTest.onboardingCommunityTest
     }
+    
     
     
     
@@ -68,13 +72,50 @@ struct DevSettingsView: View {
     
     
     private func handleCreatAccountChange(oldValue: Bool, newValue: Bool) {
+        updateTest(
+            property: &createAccountTest,
+            newValue: newValue,
+            savedValue: abTestManager.activeTest.createAccountTest,
+            updateAction: { tests in
+                tests.update(createAccountTest: newValue)
+            }
+        )
+        
+        
         if newValue != abTestManager.activeTest.createAccountTest {
             do {
                  var tests = abTestManager.activeTest
                 tests.update(createAccountTest: newValue)
                 try abTestManager.override(updatedTest: tests)
             } catch {
-                createAccountTest = abTestManager.activeTest.createAccountTest 
+                createAccountTest = abTestManager.activeTest.createAccountTest
+            }
+        }
+    }
+    
+    private func handleOnBoardingCommunityTestChange(oldValue: Bool, newValue: Bool) {
+        updateTest(
+            property: &onBoardingCommunityTest,
+            newValue: newValue,
+            savedValue: abTestManager.activeTest.onboardingCommunityTest,
+            updateAction: { tests in
+                tests.update(onboardingCommunityTest: newValue)
+            }
+        )
+    }
+    
+    private func updateTest(
+                            property: inout Bool,
+                            newValue: Bool,
+                            savedValue: Bool,
+                            updateAction: (inout ActiveABTest) -> Void){
+        if newValue != savedValue {
+            do {
+                var tests = abTestManager.activeTest
+                updateAction(&tests)
+                try abTestManager.override(updatedTest: tests)
+            } catch {
+                property = savedValue
             }
         }
     }
@@ -85,6 +126,9 @@ struct DevSettingsView: View {
             
             Toggle("Create Acc Test", isOn: $createAccountTest)
                 .onChange(of: createAccountTest, handleCreatAccountChange)
+            
+            Toggle("Onboarding Community  Test", isOn: $onBoardingCommunityTest)
+                .onChange(of: onBoardingCommunityTest, handleOnBoardingCommunityTestChange)
            
         } header: {
             Text("AB Test")

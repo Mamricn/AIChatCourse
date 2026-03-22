@@ -8,17 +8,49 @@
 import SwiftUI
 
 
+protocol ABTestService {
+    var activeTest: ActiveABTest { get }
+    func saveUpdatedConfig(updatedTests: ActiveABTest) throws
+    
+}
+
+
+
+
+class MockABTestService: ABTestService {
+    
+    var activeTest: ActiveABTest
+    
+    init(createAccountTest: Bool? = nil, onboardingCommunityTest: Bool? = nil){
+        self.activeTest = ActiveABTest(
+            createAccountTest: createAccountTest ?? false,
+            onboardingCommunityTest: onboardingCommunityTest ?? false
+        )
+    }
+    
+    func saveUpdatedConfig(updatedTests: ActiveABTest) throws {
+        activeTest = updatedTests
+    }
+    
+}
+
+
+
+
 
 
 struct ActiveABTest: Codable {
     private(set) var createAccountTest: Bool
+    private(set) var onboardingCommunityTest: Bool
     
-    init(createAccountTest: Bool){
+    init(createAccountTest: Bool, onboardingCommunityTest: Bool){
         self.createAccountTest = createAccountTest
+        self.onboardingCommunityTest = onboardingCommunityTest
     }
     
     enum CodingKeys: String, CodingKey {
         case createAccountTest = "_202603_CreateAccTest"
+        case onboardingCommunityTest = "_202603_OnbCommTest"
     }
     
     var eventParameters: [String: Any] {
@@ -29,56 +61,36 @@ struct ActiveABTest: Codable {
         ]
         return dict.compactMapValues({ $0 })
     }
+    
     mutating func update(createAccountTest newValue: Bool){
         createAccountTest = newValue
     }
-}
-
-
-
-
-
-
-
-
-protocol ABTestService {
-    var activeTest: ActiveABTest { get }
-    func saveUpdatedConfig(updatedTests: ActiveABTest) throws
-    
-}
-
-
-class MockABTestService: ABTestService {
-    
-    var activeTest: ActiveABTest
-    
-    init(createAccountTest: Bool? = nil){
-        self.activeTest = ActiveABTest(
-            createAccountTest: createAccountTest ?? false
-        )
+    mutating func update(onboardingCommunityTest newValue: Bool){
+        onboardingCommunityTest = newValue
     }
-    
-    
-    func saveUpdatedConfig(updatedTests: ActiveABTest) throws {
-        activeTest = updatedTests
-    }
-
-    
-    
-    
 }
+
+
+
+
+
+
 
 class LocalABTestSerivce: ABTestService {
     @UserDefault(key: ActiveABTest.CodingKeys.createAccountTest.rawValue, startingValue: .random()) private var createAccountTest: Bool
+    @UserDefault(key: ActiveABTest.CodingKeys.onboardingCommunityTest.rawValue, startingValue: .random()) private var onboardingCommunityTest: Bool
+
     
     var activeTest: ActiveABTest {
         ActiveABTest(
-            createAccountTest: createAccountTest
+            createAccountTest: createAccountTest,
+            onboardingCommunityTest: onboardingCommunityTest
         )
     }
     
     func saveUpdatedConfig(updatedTests: ActiveABTest) throws {
         createAccountTest = updatedTests.createAccountTest
+        onboardingCommunityTest = updatedTests.onboardingCommunityTest
     }
 }
 
