@@ -21,6 +21,9 @@ struct DevSettingsView: View {
     
     @State private var createAccountTest: Bool = false
     @State private var onBoardingCommunityTest: Bool = false
+    @State private var categoryRowTest: CategoryRowTestOptions = .default
+
+
 
     
     
@@ -51,6 +54,8 @@ struct DevSettingsView: View {
     private func loadABTest(){
         createAccountTest = abTestManager.activeTest.createAccountTest
         onBoardingCommunityTest = abTestManager.activeTest.onboardingCommunityTest
+        categoryRowTest = abTestManager.activeTest.categoryRowTest
+
     }
     
     
@@ -80,17 +85,6 @@ struct DevSettingsView: View {
                 tests.update(createAccountTest: newValue)
             }
         )
-        
-        
-        if newValue != abTestManager.activeTest.createAccountTest {
-            do {
-                 var tests = abTestManager.activeTest
-                tests.update(createAccountTest: newValue)
-                try abTestManager.override(updatedTest: tests)
-            } catch {
-                createAccountTest = abTestManager.activeTest.createAccountTest
-            }
-        }
     }
     
     private func handleOnBoardingCommunityTestChange(oldValue: Bool, newValue: Bool) {
@@ -104,10 +98,21 @@ struct DevSettingsView: View {
         )
     }
     
-    private func updateTest(
-                            property: inout Bool,
-                            newValue: Bool,
-                            savedValue: Bool,
+    private func handleOnCategoryRowOptionTestChange(oldValue: CategoryRowTestOptions, newValue: CategoryRowTestOptions) {
+        updateTest(
+            property: &categoryRowTest,
+            newValue: newValue,
+            savedValue: abTestManager.activeTest.categoryRowTest,
+            updateAction: { tests in
+                tests.update(categoryRowTest: newValue)
+            }
+        )
+    }
+    
+    private func updateTest<T: Equatable>(
+                            property: inout T,
+                            newValue: T,
+                            savedValue: T,
                             updateAction: (inout ActiveABTest) -> Void){
         if newValue != savedValue {
             do {
@@ -129,6 +134,15 @@ struct DevSettingsView: View {
             
             Toggle("Onboarding Community  Test", isOn: $onBoardingCommunityTest)
                 .onChange(of: onBoardingCommunityTest, handleOnBoardingCommunityTestChange)
+            
+            Picker("Category Row Test", selection: $categoryRowTest) {
+                ForEach(CategoryRowTestOptions.allCases, id: \.self) { option in
+                    Text(option.rawValue)
+                        .id(option)
+                }
+            }
+            .onChange(of: categoryRowTest, handleOnCategoryRowOptionTestChange)
+
            
         } header: {
             Text("AB Test")
