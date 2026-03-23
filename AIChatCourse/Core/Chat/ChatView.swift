@@ -19,6 +19,7 @@ struct ChatView: View {
     @Environment(AvatarManager.self) private var avatarManager
     @Environment(AIManager.self) private var aiManager
     @Environment(LogManager.self) private var logManager
+    @Environment(PurchaseManager.self)private var purchaseMangager
     @Environment(\.dismiss) private var dismiss
     
     
@@ -39,6 +40,7 @@ struct ChatView: View {
     @State private var showChatSettings: AnyAppAlert?
     @State private var isGeneratingResponse: Bool = false
     @State private var listenerTask: Task<Void, Never>?
+    @State private var showPaywal: Bool = false
 
     var avatarId: String = AvatarModel.mock.avatarId
     
@@ -81,6 +83,9 @@ struct ChatView: View {
                 profileModal(avatar: avatar)
             }
         }
+        .sheet(isPresented: $showPaywal, content: {
+            PaywallView()
+        })
         .task {
             await loadAvatar()
         }
@@ -328,6 +333,16 @@ struct ChatView: View {
         
         Task {
             do{
+                
+                // user is not premium
+                //chat has >= 3 messages
+                let isPremium = purchaseMangager.entitlements.hasActiveEntitlement
+                if !isPremium && chatMessages.count >= 3 {
+                    showPaywal = true
+                    return
+                }
+                
+                
                 
                 // get UserId
                 let uid = try authManager.getAuthId()
