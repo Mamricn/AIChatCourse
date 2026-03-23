@@ -100,6 +100,7 @@ struct Dependencies {
     let logManager: LogManager
     let pushManager: PushManager
     let abTestManager: ABTestManager
+    let purchaseManager: PurchaseManager
     
     
     
@@ -117,6 +118,7 @@ struct Dependencies {
             avatarManager = AvatarManager(service: MockAvatarService(), local: MockLocalAvatarPersistence())
             chatManager = ChatManager(service: MockChatService())
             abTestManager = ABTestManager(service: MockABTestService(), logManager: logManager)
+            purchaseManager = PurchaseManager(service: MockPurchaseService(), logManager: logManager)
           
         case .dev:
             logManager = LogManager(services: [
@@ -132,6 +134,8 @@ struct Dependencies {
             avatarManager = AvatarManager(service: FirebaseAvatarService(), local: SwiftDataLocalAvatar())
             chatManager = ChatManager(service: FirebaseChatService())
             abTestManager = ABTestManager(service: LocalABTestSerivce(), logManager: logManager)
+            purchaseManager = PurchaseManager(service: StoreKitPurchaseService(), logManager: logManager)
+
 
            
         case .prod:
@@ -146,7 +150,7 @@ struct Dependencies {
             avatarManager = AvatarManager(service: FirebaseAvatarService(), local: SwiftDataLocalAvatar())
             chatManager = ChatManager(service: FirebaseChatService())
             abTestManager = ABTestManager(service: FirebaseABService(), logManager: logManager)
-
+            purchaseManager = PurchaseManager(service: StoreKitPurchaseService(), logManager: logManager)
            
         }
         pushManager = PushManager(logManager: logManager)
