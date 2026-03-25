@@ -87,12 +87,9 @@ struct UserModel: Codable {
     
     
     var profileColorCalculated: Color {
-        guard let profileColorHex else {
-            return .pink
-        }
-        return Color(hex: profileColorHex )
+        guard let hex = profileColorHex else { return .pink }
+        return Color(hex: hex) ?? .pink  // ← teraz ?? ma sens
     }
-    
     
     static var mock: Self {
         mocks[0]
