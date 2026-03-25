@@ -12,15 +12,18 @@ struct ActiveABTest: Codable {
     private(set) var createAccountTest: Bool
     private(set) var onboardingCommunityTest: Bool
     private(set) var categoryRowTest: CategoryRowTestOptions
+    private(set) var paywallTest: PaywallTestOptions
     
     init(
         createAccountTest: Bool,
         onboardingCommunityTest: Bool,
-        categoryRowTest: CategoryRowTestOptions
+        categoryRowTest: CategoryRowTestOptions,
+        paywallTest: PaywallTestOptions
     ){
         self.createAccountTest = createAccountTest
         self.onboardingCommunityTest = onboardingCommunityTest
         self.categoryRowTest = categoryRowTest
+        self.paywallTest = paywallTest
     }
 
     
@@ -28,6 +31,7 @@ struct ActiveABTest: Codable {
         case createAccountTest = "_202603_CreateAccTest"
         case onboardingCommunityTest = "_202603_OnbCommTest"
         case categoryRowTest = "_202603_CategoryRowTest"
+        case paywallTest = "_202603_PaywallTest"
     }
     
     var eventParameters: [String: Any] {
@@ -35,7 +39,9 @@ struct ActiveABTest: Codable {
         let dict: [String: Any?] = [
             "test\(CodingKeys.createAccountTest.rawValue)": createAccountTest,
             "test\(CodingKeys.onboardingCommunityTest.rawValue)": onboardingCommunityTest,
-            "test\(CodingKeys.categoryRowTest.rawValue)": categoryRowTest.rawValue
+            "test\(CodingKeys.categoryRowTest.rawValue)": categoryRowTest.rawValue,
+            "test\(CodingKeys.paywallTest.rawValue)": paywallTest.rawValue
+
 
         ]
         return dict.compactMapValues({ $0 })
@@ -49,6 +55,9 @@ struct ActiveABTest: Codable {
     }
     mutating func update(categoryRowTest newValue: CategoryRowTestOptions){
         categoryRowTest = newValue
+    }
+    mutating func update(paywallTest newValue: PaywallTestOptions){
+        paywallTest = newValue
     }
 }
 
@@ -73,6 +82,14 @@ extension ActiveABTest {
         }else {
             self.categoryRowTest = .default
         }
+        
+        let paywallTestStringValue = config.configValue(forKey: ActiveABTest.CodingKeys.paywallTest.rawValue).stringValue
+        if let option = PaywallTestOptions(rawValue: categoryRowTestStringValue){
+            self.paywallTest = option
+        }else {
+            self.paywallTest = .default
+        }
+        
     }
     
     //Convert to a NSObject Dictionary to setDifaults within FirebaseABTestService
@@ -80,7 +97,9 @@ extension ActiveABTest {
          [
             CodingKeys.createAccountTest.rawValue: createAccountTest as NSObject,
             CodingKeys.onboardingCommunityTest.rawValue: onboardingCommunityTest as NSObject,
-            CodingKeys.categoryRowTest.rawValue: categoryRowTest.rawValue as NSObject
+            CodingKeys.categoryRowTest.rawValue: categoryRowTest.rawValue as NSObject,
+            CodingKeys.paywallTest.rawValue: paywallTest.rawValue as NSObject
+
         ]
     }
 }

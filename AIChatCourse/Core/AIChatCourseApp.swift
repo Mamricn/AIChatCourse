@@ -122,7 +122,7 @@ struct Dependencies {
             purchaseManager = PurchaseManager(service: MockPurchaseService(), logManager: logManager)
           
         case .dev:
-            logManager = LogManager(services: [
+            logManager = LogManager(services: [ 
                 ConsoleService(printParameters: true),
                 FirebaseAnalyticsService(),
                 MixPanelService(token: Keys.mixPanelToken),

@@ -22,6 +22,7 @@ struct DevSettingsView: View {
     @State private var createAccountTest: Bool = false
     @State private var onBoardingCommunityTest: Bool = false
     @State private var categoryRowTest: CategoryRowTestOptions = .default
+    @State private var paywallTest: PaywallTestOptions = .default
 
 
 
@@ -109,6 +110,23 @@ struct DevSettingsView: View {
         )
     }
     
+    
+    
+    private func handleOnPaywallTestChange(oldValue: PaywallTestOptions, newValue: PaywallTestOptions) {
+        updateTest(
+            property: &paywallTest,
+            newValue: newValue,
+            savedValue: abTestManager.activeTest.paywallTest,
+            updateAction: { tests in
+                tests.update(paywallTest: newValue)
+            }
+        )
+    }
+    
+    
+    
+    
+    
     private func updateTest<T: Equatable>(
                             property: inout T,
                             newValue: T,
@@ -142,6 +160,16 @@ struct DevSettingsView: View {
                 }
             }
             .onChange(of: categoryRowTest, handleOnCategoryRowOptionTestChange)
+            
+            
+            Picker("Paywall Test", selection: $paywallTest) {
+                ForEach(PaywallTestOptions.allCases, id: \.self) { option in
+                    Text(option.rawValue)
+                        .id(option)
+                }
+            }
+            .onChange(of: paywallTest, handleOnPaywallTestChange)
+
 
            
         } header: {
